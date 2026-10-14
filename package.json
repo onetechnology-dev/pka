@@ -6,6 +6,7 @@
   "scripts": {
     "start": "node server.js",
     "db:init": "node database.js",
+    "db:restore": "node restore-railway.js",
     "scrape": "node scrape-foodpanda.js",
     "scrape:fragrantica": "node scrape-fragrantica.js",
     "check": "node -c database.js && node -c run-cli.js && node -c scrape-foodpanda.js && node -c scrape-fragrantica.js && node -c server.js && node -c public/app.js",
