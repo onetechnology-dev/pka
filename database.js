@@ -96,10 +96,16 @@ function fromRow(row) {
 }
 
 async function createStore(options = {}) {
-  const database = options.database || process.env.DB_NAME || "scraper";
+  const database = options.database || process.env.MYSQLDATABASE || process.env.DB_NAME || "scraper";
   if (!/^[a-zA-Z0-9_]+$/.test(database)) throw problem("Invalid database name.");
-  const config = { host: process.env.DB_HOST || "127.0.0.1", port: Number(process.env.DB_PORT || 3306),
-    user: process.env.DB_USER || "root", password: process.env.DB_PASSWORD || "", charset: "utf8mb4", connectTimeout: 10000 };
+  const config = {
+    host: process.env.MYSQLHOST || process.env.DB_HOST || "127.0.0.1",
+    port: Number(process.env.MYSQLPORT || process.env.DB_PORT || 3306),
+    user: process.env.MYSQLUSER || process.env.DB_USER || "root",
+    password: process.env.MYSQLPASSWORD || process.env.DB_PASSWORD || "",
+    charset: "utf8mb4",
+    connectTimeout: 10000,
+  };
   const connection = await mysql.createConnection(config);
   try { await connection.query(`CREATE DATABASE IF NOT EXISTS \`${database}\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci`); }
   finally { await connection.end(); }
