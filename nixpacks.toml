@@ -6,3 +6,4 @@ cmds = ["npm ci || npm install", "npx playwright install chromium --with-deps ||
 
 [start]
 cmd = "npm start"
+

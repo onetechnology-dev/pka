@@ -7,7 +7,7 @@ const { URL } = require("url");
 const { scrapeFoodpanda } = require("./scrape-foodpanda");
 const { scrapeFragrantica, isFragranticaUrl } = require("./scrape-fragrantica");
 const { randomUUID } = require("node:crypto");
-const { createStore, problem, DEFAULT_SETTINGS } = require("./database");
+const { createStore, createFallbackStore, problem, DEFAULT_SETTINGS } = require("./database");
 const { createTelegramBotService } = require("./telegram-bot");
 
 function setWindowsClipboardFiles(filePaths) {
@@ -633,33 +633,57 @@ return server;
 
 if (require.main === module) {
   (async () => {
-    const store = await createStore();
+    let store;
     try {
-      if (process.env.SKIP_LEGACY_IMPORT !== "1") await store.importLegacy();
-      const server = createApp(store);
-      server.on("error", async (error) => {
-        if (error.code === "EADDRINUSE") {
-          console.error(`Server failed: ${error.code}. Port ${port} is already in use. To resolve, stop the process using port ${port} or choose another port: $env:PORT="${port === 7000 ? 7001 : 7000}"; npm start`);
-        } else {
-          console.error(`Server failed: ${error.code}`);
-        }
-        await store.close();
-        process.exitCode = 1;
-      });
-      server.listen(port, host, () => {
-        if (server.telegramBot) server.telegramBot.start();
-        console.log(`Product scraper UI running at http://${host}:${server.address().port}`);
-        console.log(`- Frontend: http://${host}:${server.address().port}/`);
-        console.log(`- Backend:  http://${host}:${server.address().port}/admin (User: admin / Pass: 123)`);
-      });
-      const stop = () => {
-        if (server.telegramBot) server.telegramBot.stop();
-        server.close(() => store.close().then(() => process.exit(0)));
-      };
-      process.on("SIGINT", stop);
-      process.on("SIGTERM", stop);
-    } catch (error) { await store.close(); throw error; }
-  })().catch((error) => { console.error(`Startup failed: ${error.code || error.message}. Check the database settings in .env.`); process.exitCode = 1; });
+      store = await createStore();
+    } catch (err) {
+      console.warn(`[SERVER] Database initialization warning (${err.message}). Using resilient local storage.`);
+      store = createFallbackStore();
+    }
+
+    try {
+      if (process.env.SKIP_LEGACY_IMPORT !== "1") {
+        await store.importLegacy().catch((err) => {
+          console.warn(`[SERVER] Legacy import warning: ${err.message}`);
+        });
+      }
+    } catch (err) {
+      console.warn(`[SERVER] Legacy import skipped: ${err.message}`);
+    }
+
+    const server = createApp(store);
+    server.on("error", async (error) => {
+      if (error.code === "EADDRINUSE") {
+        console.error(`Server failed: ${error.code}. Port ${port} is already in use.`);
+      } else {
+        console.error(`Server failed: ${error.code}`);
+      }
+      await store.close().catch(() => {});
+      process.exitCode = 1;
+    });
+
+    server.listen(port, host, () => {
+      if (server.telegramBot) server.telegramBot.start();
+      console.log(`Product scraper UI running at http://${host}:${server.address().port}`);
+      console.log(`- Frontend: http://${host}:${server.address().port}/`);
+      console.log(`- Backend:  http://${host}:${server.address().port}/admin (User: admin / Pass: 123)`);
+      if (store.isFallback) {
+        console.log(`- Storage: Local fallback storage active. (Add a MySQL service in Railway to store in MySQL)`);
+      } else {
+        console.log(`- Database: Connected to MySQL [${store.database}]`);
+      }
+    });
+
+    const stop = () => {
+      if (server.telegramBot) server.telegramBot.stop();
+      server.close(() => store.close().catch(() => {}).then(() => process.exit(0)));
+    };
+    process.on("SIGINT", stop);
+    process.on("SIGTERM", stop);
+  })().catch((error) => {
+    console.error(`Startup error: ${error.code || error.message}`);
+    process.exitCode = 1;
+  });
 }
 
 module.exports = { createApp };

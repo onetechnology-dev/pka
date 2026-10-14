@@ -296,9 +296,8 @@ function getProxiedImageUrl(url) {
 function renderImage(url, label, className) {
   const valid = /^https?:\/\//i.test(url || "") || (typeof url === "string" && (url.startsWith("/uploads/") || url.startsWith("data:")));
   const fallback = `<span class="image-fallback" ${valid ? "hidden" : ""}>Image unavailable</span>`;
-  const proxiedSrc = valid ? getProxiedImageUrl(url) : "";
   return `<span class="image-frame ${className}-frame">${valid
-    ? `<img class="${className}" src="${escapeHtml(proxiedSrc)}" data-raw-src="${escapeHtml(url)}" alt="${escapeHtml(label)}" loading="lazy" referrerpolicy="no-referrer">`
+    ? `<img class="${className}" src="${escapeHtml(url)}" data-raw-src="${escapeHtml(url)}" alt="${escapeHtml(label)}" loading="lazy" referrerpolicy="no-referrer">`
     : ""}${fallback}</span>`;
 }
 
