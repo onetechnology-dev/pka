@@ -73,10 +73,29 @@ async function restore() {
       throw new Error(`Backup file not found at ${sqlPath}.`);
     }
 
-    const sqlContent = fs.readFileSync(sqlPath, "utf8");
-    console.log(`Executing restore from backup-tables.sql (${Math.round(sqlContent.length / 1024)} KB)...`);
+    const rawSql = fs.readFileSync(sqlPath, "utf8");
+    console.log(`Executing restore from backup-tables.sql (${Math.round(rawSql.length / 1024)} KB)...`);
 
-    await connection.query(sqlContent);
+    // Clean MariaDB-specific comments and line comments
+    let cleanedSql = rawSql.replace(/\/\*M![\s\S]*?\*\//g, "");
+    cleanedSql = cleanedSql.replace(/^--.*$/gm, "");
+
+    const statements = cleanedSql
+      .split(/;\s*[\r\n]+/)
+      .map((s) => s.trim())
+      .filter((s) => s.length > 0 && s !== ";");
+
+    for (const stmt of statements) {
+      try {
+        await connection.query(stmt);
+      } catch (err) {
+        // Ignore teardown character set reset errors if variables were not set
+        if (stmt.includes("CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT") || stmt.includes("@OLD_")) {
+          continue;
+        }
+        throw err;
+      }
+    }
 
     const [[{ productCount }]] = await connection.query("SELECT COUNT(*) AS productCount FROM scraper_products");
     const [[{ settingCount }]] = await connection.query("SELECT COUNT(*) AS settingCount FROM scraper_settings");
@@ -100,3 +119,4 @@ if (require.main === module) {
 }
 
 module.exports = { restore };
+
