@@ -1,0 +1,6 @@
+node_modules
+.env
+.git
+backup.sql
+backup-clean.sql
+.fragrantica-session.json
