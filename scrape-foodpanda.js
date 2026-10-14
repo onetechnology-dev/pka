@@ -1,4 +1,5 @@
 const { chromium } = require("playwright");
+const { launchChromium } = require("./browser-launcher");
 const fs = require("fs");
 const path = require("path");
 
@@ -104,7 +105,7 @@ async function scrapeFoodpanda(targetUrl, options = {}) {
 
   onStatus("Launching browser");
 
-  const browser = await chromium.launch({
+  const browser = await launchChromium({
     headless,
   });
 

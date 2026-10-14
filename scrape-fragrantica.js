@@ -1,4 +1,5 @@
 const { chromium } = require("playwright");
+const { launchChromium } = require("./browser-launcher");
 const fs = require("fs");
 const path = require("path");
 const { randomUUID } = require("node:crypto");
@@ -248,13 +249,8 @@ async function scrapeFragrantica(targetUrl, options = {}) {
     sessionPath = path.join(__dirname, ".fragrantica-session.json"),
   } = options;
   onStatus(headless ? "Opening Fragrantica in the background" : "Opening Fragrantica. Complete any verification in the browser.");
-  // Use the full Chromium engine in both modes, rather than the separate headless shell.
-  const browser = await chromium.launch({
-    headless,
-    channel: "chromium",
-    args: ["--disable-blink-features=AutomationControlled"],
-    ignoreDefaultArgs: ["--enable-automation"],
-  });
+  // Use launchChromium with container-safe flags and multi-stage browser detection.
+  const browser = await launchChromium({ headless });
   try {
     let storageState;
     if (sessionPath && fs.existsSync(sessionPath)) {
