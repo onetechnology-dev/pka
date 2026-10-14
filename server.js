@@ -330,21 +330,22 @@ const server = http.createServer(async (request, response) => {
         fs.mkdirSync(clipboardDir, { recursive: true });
       }
 
-      const savedFilePaths = [];
-      for (let i = 0; i < images.length; i++) {
-        const img = images[i];
+      const writePromises = images.map(async (img, i) => {
         const dataUrl = img.dataUrl || "";
         const matches = dataUrl.match(/^data:image\/[A-Za-z-+/]+;base64,(.+)$/);
         const base64Str = matches ? matches[1] : (dataUrl.startsWith("data:") ? dataUrl.split(",")[1] : dataUrl);
-        if (!base64Str) continue;
+        if (!base64Str) return null;
 
         const buffer = Buffer.from(base64Str, "base64");
         const safeName = (img.name || `perfume-${i + 1}`).replace(/[^a-zA-Z0-9._-]/g, "_").slice(0, 35);
         const fileName = `${Date.now()}_${i + 1}_${safeName.endsWith(".png") ? safeName : safeName + ".png"}`;
         const filePath = path.join(clipboardDir, fileName);
-        fs.writeFileSync(filePath, buffer);
-        savedFilePaths.push(filePath);
-      }
+        await fs.promises.writeFile(filePath, buffer);
+        return filePath;
+      });
+
+      const writeResults = await Promise.all(writePromises);
+      const savedFilePaths = writeResults.filter(Boolean);
 
       let clipboardSet = false;
       if (savedFilePaths.length > 0) {
@@ -387,14 +388,14 @@ const server = http.createServer(async (request, response) => {
         response.writeHead(200, {
           "content-type": "text/plain; charset=utf-8",
           "access-control-allow-origin": "*",
-          "cache-control": "public, max-age=86400",
+          "cache-control": "public, max-age=604800, immutable",
         });
         response.end(cached.base64DataUrl);
       } else {
         response.writeHead(200, {
           "content-type": cached.contentType,
           "access-control-allow-origin": "*",
-          "cache-control": "public, max-age=86400",
+          "cache-control": "public, max-age=604800, immutable",
         });
         response.end(cached.buffer);
       }
@@ -415,7 +416,7 @@ const server = http.createServer(async (request, response) => {
       const contentType = imgRes.headers.get("content-type") || "image/jpeg";
       const buffer = Buffer.from(await imgRes.arrayBuffer());
       const base64DataUrl = `data:${contentType};base64,${buffer.toString("base64")}`;
-      if (imageProxyCache.size > 300) {
+      if (imageProxyCache.size > 500) {
         const firstKey = imageProxyCache.keys().next().value;
         imageProxyCache.delete(firstKey);
       }
@@ -425,14 +426,14 @@ const server = http.createServer(async (request, response) => {
         response.writeHead(200, {
           "content-type": "text/plain; charset=utf-8",
           "access-control-allow-origin": "*",
-          "cache-control": "public, max-age=86400",
+          "cache-control": "public, max-age=604800, immutable",
         });
         response.end(base64DataUrl);
       } else {
         response.writeHead(200, {
           "content-type": contentType,
           "access-control-allow-origin": "*",
-          "cache-control": "public, max-age=86400",
+          "cache-control": "public, max-age=604800, immutable",
         });
         response.end(buffer);
       }
