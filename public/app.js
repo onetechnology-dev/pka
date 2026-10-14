@@ -198,6 +198,10 @@ function setAppMode(mode) {
   } else {
     checkAdminAuthStatus();
   }
+  if (products && products.length) {
+    renderTable();
+    updateFilterCounts();
+  }
   updateTelegramContactWidget();
 }
 
@@ -381,6 +385,11 @@ function visibleProducts() {
   const unisexChecked = Boolean(filterUnisex?.checked);
 
   return products.filter((product) => {
+    // Frontend storefront only shows active products
+    if (currentMode === "frontend" && product.status === "Deactive") {
+      return false;
+    }
+
     if (menChecked || womenChecked || unisexChecked) {
       const nameLower = (product.name || "").toLowerCase();
       const isUnisex = /for (?:women and men|men and women|women & men|men & women)\b/i.test(nameLower) || /\bunisex\b/i.test(nameLower);
@@ -413,8 +422,12 @@ function visibleProducts() {
 
 function updateFilterCounts() {
   const query = (filterInput?.value || "").trim().toLowerCase();
+  const basePool = currentMode === "frontend"
+    ? products.filter((product) => product.status !== "Deactive")
+    : products;
+
   const baseProducts = query
-    ? products.filter((product) => {
+    ? basePool.filter((product) => {
         return [
           product.name,
           product.brand,
@@ -428,7 +441,7 @@ function updateFilterCounts() {
           .toLowerCase()
           .includes(query);
       })
-    : products;
+    : basePool;
 
   let menCount = 0;
   let womenCount = 0;
@@ -472,7 +485,7 @@ function renderTable() {
   resultsBody.innerHTML = rows
     .map((product) => {
       const photoCell = product.photo
-        ? `<img class="product-photo" src="${escapeHtml(getProxiedImageUrl(product.photo))}" data-raw-src="${escapeHtml(product.photo)}" alt="${escapeHtml(product.name)}" loading="lazy" referrerpolicy="no-referrer" />`
+        ? `<img class="product-photo" src="${escapeHtml(product.photo)}" data-raw-src="${escapeHtml(product.photo)}" alt="${escapeHtml(product.name)}" loading="lazy" referrerpolicy="no-referrer" />`
         : `<span class="photo-placeholder">No img</span>`;
 
       if (isFragrantica()) {

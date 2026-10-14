@@ -95,3 +95,34 @@ test("app.js binds filterUnisex and handles unisex filtering logic and count cal
     "Eros Energy Versace for men",
   ].sort());
 });
+
+test("frontend only displays Active products while backend displays both Active and Deactive", () => {
+  const appJs = fs.readFileSync(path.join(__dirname, "../public/app.js"), "utf8");
+  assert.match(appJs, /if\s*\(currentMode === "frontend" && product\.status === "Deactive"\)\s*{\s*return false;\s*}/);
+  assert.match(appJs, /const basePool = currentMode === "frontend"\s*\?\s*products\.filter\(\(product\) => product\.status !== "Deactive"\)\s*:\s*products;/);
+
+  const sampleProducts = [
+    { name: "Perfume A for men", status: "Active" },
+    { name: "Perfume B for women", status: "Deactive" },
+    { name: "Perfume C unisex", status: "Active" },
+    { name: "Perfume D for men", status: "Deactive" },
+  ];
+
+  function simulateVisible(mode, products) {
+    return products.filter((product) => {
+      if (mode === "frontend" && product.status === "Deactive") return false;
+      return true;
+    });
+  }
+
+  const frontendVisible = simulateVisible("frontend", sampleProducts);
+  assert.deepEqual(frontendVisible.map((p) => p.name), ["Perfume A for men", "Perfume C unisex"]);
+
+  const backendVisible = simulateVisible("backend", sampleProducts);
+  assert.deepEqual(backendVisible.map((p) => p.name), [
+    "Perfume A for men",
+    "Perfume B for women",
+    "Perfume C unisex",
+    "Perfume D for men",
+  ]);
+});

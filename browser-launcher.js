@@ -22,6 +22,10 @@ async function launchChromium(options = {}) {
     process.env.CHROME_BIN ||
     process.env.CHROMIUM_PATH;
 
+  if (options.channel) {
+    launchOptions.channel = options.channel;
+  }
+
   if (envExec && fs.existsSync(envExec)) {
     launchOptions.executablePath = envExec;
   }

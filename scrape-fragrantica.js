@@ -250,7 +250,7 @@ async function scrapeFragrantica(targetUrl, options = {}) {
   } = options;
   onStatus(headless ? "Opening Fragrantica in the background" : "Opening Fragrantica. Complete any verification in the browser.");
   // Use launchChromium with container-safe flags and multi-stage browser detection.
-  const browser = await launchChromium({ headless });
+  const browser = await launchChromium({ headless, channel: options.channel || "chromium" });
   try {
     let storageState;
     if (sessionPath && fs.existsSync(sessionPath)) {
