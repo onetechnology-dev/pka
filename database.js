@@ -96,7 +96,17 @@ function fromRow(row) {
 }
 
 function parseDbConfig(options = {}) {
-  const urlString = options.url || process.env.MYSQL_URL || process.env.DATABASE_URL || process.env.MYSQL_PRIVATE_URL || process.env.MYSQL_PUBLIC_URL;
+  const anyMysqlUrl = Object.values(process.env).find((v) => typeof v === "string" && v.startsWith("mysql://"));
+  const urlString =
+    options.url ||
+    process.env.MYSQL_URL ||
+    process.env.DATABASE_URL ||
+    process.env.MYSQL_PRIVATE_URL ||
+    process.env.MYSQL_PUBLIC_URL ||
+    process.env["${{MySQL.MYSQL_PRIVATE_URL}}"] ||
+    process.env["${{MySQL.MYSQL_URL}}"] ||
+    process.env["${{MySQL.DATABASE_URL}}"] ||
+    anyMysqlUrl;
   let host = process.env.MYSQLHOST || process.env.MYSQL_HOST || process.env.DB_HOST || "127.0.0.1";
   let port = Number(process.env.MYSQLPORT || process.env.MYSQL_PORT || process.env.DB_PORT || 3306);
   let user = process.env.MYSQLUSER || process.env.MYSQL_USER || process.env.DB_USER || "root";
