@@ -9,6 +9,7 @@
     "db:restore": "node restore-railway.js",
     "scrape": "node scrape-foodpanda.js",
     "scrape:fragrantica": "node scrape-fragrantica.js",
+    "postinstall": "npx playwright install --with-deps chromium chromium-headless-shell || true",
     "check": "node -c database.js && node -c run-cli.js && node -c scrape-foodpanda.js && node -c scrape-fragrantica.js && node -c server.js && node -c public/app.js",
     "test": "npm run check && node --test"
   },

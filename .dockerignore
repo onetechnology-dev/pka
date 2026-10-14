@@ -4,3 +4,4 @@ node_modules
 backup.sql
 backup-clean.sql
 .fragrantica-session.json
+

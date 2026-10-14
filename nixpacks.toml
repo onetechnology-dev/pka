@@ -1,0 +1,11 @@
+[phases.setup]
+nixPkgs = ["nodejs_22"]
+
+[phases.install]
+cmds = [
+  "npm install",
+  "npx playwright install --with-deps chromium chromium-headless-shell || true"
+]
+
+[start]
+cmd = "node server.js"

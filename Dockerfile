@@ -7,7 +7,7 @@ COPY package*.json ./
 RUN npm ci || npm install
 
 # Ensure Playwright browser binaries and dependencies are installed
-RUN npx playwright install --with-deps chromium
+RUN npx playwright install --with-deps chromium chromium-headless-shell
 
 # Copy remaining source code
 COPY . .
@@ -20,3 +20,4 @@ ENV NODE_ENV=production
 EXPOSE 7000
 
 CMD ["node", "server.js"]
+
