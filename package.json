@@ -5,15 +5,18 @@
   "main": "index.js",
   "scripts": {
     "start": "node server.js",
+    "db:init": "node database.js",
     "scrape": "node scrape-foodpanda.js",
-    "check": "node -c scrape-foodpanda.js && node -c server.js && node -c public/app.js",
-    "test": "npm run check"
+    "scrape:fragrantica": "node scrape-fragrantica.js",
+    "check": "node -c database.js && node -c run-cli.js && node -c scrape-foodpanda.js && node -c scrape-fragrantica.js && node -c server.js && node -c public/app.js",
+    "test": "npm run check && node --test"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "mysql2": "^3.24.5",
     "playwright": "^1.61.0"
   }
 }

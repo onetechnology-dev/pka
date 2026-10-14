@@ -3,35 +3,140 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Foodpanda Scraper</title>
+    <title>PKA SCENT | Luxury Fragrance Scraper &amp; Collection</title>
     <link rel="stylesheet" href="/styles.css" />
   </head>
   <body>
     <main class="app-shell">
-      <header class="topbar">
-        <div>
-          <p class="eyebrow">Local scraper</p>
-          <h1>Foodpanda products</h1>
+      <header class="topbar brand-topbar">
+        <div class="brand-header-left">
+          <div class="brand-crest" id="brandCrest" aria-hidden="true">
+            <span class="crest-symbol" id="crestSymbol">⚜️</span>
+          </div>
+          <div>
+            <h1 class="brand-title" id="brandTitle">PKA SCENT</h1>
+            <p class="eyebrow" id="topbarEyebrow">Luxury Fragrance Collection</p>
+          </div>
         </div>
-        <div class="status-pill" id="runState">Ready</div>
+
+        <div class="topbar-controls">
+          <nav class="mode-navigation" role="tablist" aria-label="Portal View Navigation">
+            <button id="viewFrontendBtn" class="mode-nav-btn active" type="button" role="tab" aria-selected="true">
+              <span class="tab-icon">🛍️</span> <span id="viewFrontendText">Frontend (PKA SCENT)</span>
+            </button>
+            <button id="viewBackendBtn" class="mode-nav-btn" type="button" role="tab" aria-selected="false">
+              <span class="tab-icon">⚙️</span> Backend (Admin)
+            </button>
+          </nav>
+          <button id="openSettingsBtn" class="settings-trigger-btn" type="button" aria-haspopup="dialog" title="Site &amp; Brand Settings">
+            <span class="btn-icon">⚙️</span> Settings
+          </button>
+          <button id="logoutBtn" class="settings-trigger-btn logout-trigger-btn" type="button" title="Sign Out of Admin">
+            🚪 Logout
+          </button>
+          <div class="status-pill" id="runState">Ready</div>
+        </div>
       </header>
 
-      <section class="control-panel" aria-label="Scraper controls">
+      <!-- Professional Admin Login Module (Shown on Backend until Authenticated) -->
+      <section class="admin-login-module" id="adminLoginModule" aria-label="Administrator login" hidden>
+        <div class="login-module-backdrop"></div>
+        <div class="login-module-card">
+          <div class="login-module-crest" aria-hidden="true">⚜️</div>
+          <h2 class="login-module-title">PKA SCENT</h2>
+          <p class="login-module-eyebrow">Haute Parfumerie • Management Console</p>
+          <div class="login-module-divider"></div>
+          <h3 class="login-module-heading">Admin Portal Sign In</h3>
+          <p class="login-module-desc">Enter administrator credentials to access the scraper control panel and luxury catalog management.</p>
+
+          <div id="adminLoginError" class="login-module-error" role="alert" hidden>
+            <span>⚠️</span> <span id="adminLoginErrorMsg">Invalid credentials. User: admin, Password: 123</span>
+          </div>
+
+          <form id="adminModuleLoginForm" class="login-module-form">
+            <div class="login-module-field">
+              <label for="moduleUsername">Username</label>
+              <input
+                id="moduleUsername"
+                name="username"
+                type="text"
+                class="login-module-input"
+                value="admin"
+                autocomplete="username"
+                required
+              />
+            </div>
+
+            <div class="login-module-field">
+              <label for="modulePassword">Password</label>
+              <input
+                id="modulePassword"
+                name="password"
+                type="password"
+                class="login-module-input"
+                placeholder="Enter password"
+                autocomplete="current-password"
+                required
+                autofocus
+              />
+            </div>
+
+            <button id="moduleLoginSubmitBtn" type="submit" class="primary-button login-module-submit-btn">
+              ⚜️ Sign In to Dashboard →
+            </button>
+          </form>
+
+          <div class="login-module-footer">
+            <span class="module-hint">Credentials: <strong>admin</strong> / <strong>123</strong></span>
+            <a href="/" class="module-return-link">← Return to Storefront</a>
+          </div>
+        </div>
+      </section>
+
+      <!-- Storefront Hero Banner (Visible on Customer / Frontend View) -->
+      <section class="storefront-hero" id="storefrontHero">
+        <div class="hero-content">
+          <span class="hero-subheading">HAUTE PARFUMERIE • PKA SCENT</span>
+          <h2>Exclusive Scent Discovery</h2>
+          <p>Explore luxury olfactory pyramids, vibrant main accords, and signature designer perfumes.</p>
+        </div>
+      </section>
+
+      <!-- Admin Scraper Control Panel (Visible in Backend / Admin View) -->
+      <section class="control-panel admin-only-section" id="adminControlPanel" aria-label="Scraper controls">
+        <div class="admin-panel-header">
+          <span class="admin-badge">Admin Controls</span>
+          <div class="admin-panel-actions">
+            <button id="adminSettingsBtn" class="secondary-button admin-settings-btn" type="button" title="Site Settings">
+              ⚙️ Settings
+            </button>
+            <button id="addProductBtn" class="primary-button add-product-btn" type="button">
+              + Add product
+            </button>
+          </div>
+        </div>
         <form id="scrapeForm" class="scrape-form">
+          <label class="url-field source-field" style="display: none;">
+            <span>Website</span>
+            <select id="source" name="source">
+              <option value="fragrantica" selected>Fragrantica</option>
+              <option value="foodpanda">Foodpanda</option>
+            </select>
+          </label>
           <label class="url-field">
-            <span>Foodpanda URL</span>
-            <input
+            <span id="urlLabel">Fragrantica perfume URLs</span>
+            <textarea
               id="targetUrl"
               name="url"
-              type="url"
-              placeholder="https://www.foodpanda.com.kh/..."
+              rows="2"
+              placeholder="https://www.fragrantica.com/perfume/..."
               autocomplete="url"
               required
-            />
+            ></textarea>
           </label>
 
           <label class="switch">
-            <input id="showBrowser" name="showBrowser" type="checkbox" checked />
+            <input id="showBrowser" name="showBrowser" type="checkbox" />
             <span class="switch-track" aria-hidden="true"></span>
             <span>Show browser</span>
           </label>
@@ -41,21 +146,22 @@
           </button>
         </form>
 
-        <div class="actions" aria-label="Output actions">
-          <button id="copyJson" class="secondary-button" type="button">Copy JSON</button>
-          <button id="downloadJson" class="secondary-button" type="button">
+        <div class="actions" aria-label="Output actions" style="display: none;">
+          <button id="copyJson" class="secondary-button" type="button" style="display: none;">Copy JSON</button>
+          <button id="downloadJson" class="secondary-button" type="button" style="display: none;">
             Download JSON
           </button>
         </div>
       </section>
 
-      <section class="summary-grid" aria-label="Scrape summary">
+      <!-- Scrape Summary Metrics (Visible in Backend / Admin View) -->
+      <section class="summary-grid admin-only-section" id="adminSummaryGrid" aria-label="Scrape summary">
         <div class="metric">
           <span>Products</span>
           <strong id="productCount">0</strong>
         </div>
         <div class="metric">
-          <span>With barcode</span>
+          <span id="detailCountLabel">With barcode</span>
           <strong id="barcodeCount">0</strong>
         </div>
         <div class="metric">
@@ -68,34 +174,432 @@
         </div>
       </section>
 
+      <!-- Results & Products Section -->
       <section class="results-section" aria-label="Scrape results">
         <div class="table-toolbar">
-          <h2>Output</h2>
-          <input
-            id="filterInput"
-            type="search"
-            placeholder="Filter name or barcode"
-            aria-label="Filter products"
-          />
+          <div class="toolbar-title-group">
+            <h2 id="toolbarHeading">Fragrance Catalogue</h2>
+            <div id="viewControls" class="view-switch" role="group" aria-label="Results view" hidden>
+              <button id="catalogueView" type="button" aria-pressed="true">Product view</button>
+              <button id="tableView" type="button" aria-pressed="false">Table</button>
+            </div>
+          </div>
+
+          <div class="filters-container">
+            <div class="filter-input-wrap">
+              <span class="search-symbol" aria-hidden="true">🔍</span>
+              <input
+                id="filterInput"
+                type="search"
+                placeholder="Filter name or barcode"
+                aria-label="Filter products"
+              />
+            </div>
+            <div class="gender-filters" role="group" aria-label="Filter by gender">
+              <label class="gender-chip" for="filterMen">
+                <input type="checkbox" id="filterMen" name="filterMen" />
+                <span class="chip-label">MEN</span><span class="filter-count" id="countMen">(0)</span>
+              </label>
+              <label class="gender-chip" for="filterWomen">
+                <input type="checkbox" id="filterWomen" name="filterWomen" />
+                <span class="chip-label">WOMEN</span><span class="filter-count" id="countWomen">(0)</span>
+              </label>
+              <label class="gender-chip" for="filterUnisex">
+                <input type="checkbox" id="filterUnisex" name="filterUnisex" />
+                <span class="chip-label">UNISEX</span><span class="filter-count" id="countUnisex">(0)</span>
+              </label>
+            </div>
+          </div>
         </div>
 
-        <div class="table-wrap">
+        <div id="productGallery" class="product-gallery" aria-label="Fragrance products" hidden></div>
+        <div id="tablePanel" class="table-wrap">
           <table>
             <thead>
-              <tr>
+              <tr id="resultsHead">
                 <th>Photo</th>
                 <th>Barcode</th>
                 <th>Name</th>
                 <th class="price-column">Price</th>
+                <th>Status</th>
+                <th>Action</th>
               </tr>
             </thead>
             <tbody id="resultsBody"></tbody>
           </table>
-          <div id="emptyState" class="empty-state" hidden>No products yet.</div>
         </div>
+        <div id="emptyState" class="empty-state" hidden>No products yet.</div>
       </section>
+
+      <!-- App Footer with Foot Tag -->
+      <footer class="app-footer" id="appFooter">
+        <div class="footer-inner">
+          <div class="footer-brand">
+            <div class="footer-crest" id="footerCrest" aria-hidden="true">
+              <span class="footer-crest-symbol" id="footerCrestSymbol">⚜️</span>
+            </div>
+            <span class="footer-project-name" id="footerProjectName">PKA SCENT</span>
+          </div>
+          <p class="footer-tag" id="footerTag">HAUTE PARFUMERIE • PKA SCENT — Exclusive Fragrance Discovery &amp; Scraper Portal</p>
+        </div>
+      </footer>
     </main>
 
+    <dialog id="productEditor" aria-labelledby="editorTitle">
+      <form id="editProductForm">
+        <h2 id="editorTitle">Edit product</h2>
+        <div id="editFields" class="editor-fields"></div>
+        <div id="editLists"></div>
+        <p id="editError" class="editor-error" role="alert"></p>
+        <div class="editor-actions">
+          <button id="cancelEdit" class="secondary-button" type="button">Cancel</button>
+          <button id="saveEdit" class="primary-button" type="submit">Save changes</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="settingsDialog" class="settings-dialog" aria-labelledby="settingsTitle">
+      <form id="settingsForm" class="settings-form">
+        <div class="settings-dialog-header">
+          <div>
+            <span class="settings-badge">Configuration</span>
+            <h2 id="settingsTitle">Site &amp; Brand Settings</h2>
+          </div>
+          <button id="closeSettingsBtn" class="close-icon-btn" type="button" aria-label="Close settings dialog">✕</button>
+        </div>
+
+        <p class="settings-intro">
+          Customize your boutique branding: change the logo symbol or image, project title, and footer tag.
+        </p>
+
+        <div class="settings-grid">
+          <!-- Project Name Field -->
+          <div class="setting-row">
+            <label for="settingProjectName" class="setting-label">
+              <span>Project Name</span>
+              <small>Displayed in header title, browser tab, and navigation</small>
+            </label>
+            <input
+              id="settingProjectName"
+              name="projectName"
+              type="text"
+              maxlength="100"
+              required
+              placeholder="e.g. PKA SCENT"
+              class="setting-control"
+            />
+          </div>
+
+          <!-- Header Subtitle Field -->
+          <div class="setting-row">
+            <label for="settingSubtitle" class="setting-label">
+              <span>Header Subtitle</span>
+              <small>Subtitle displayed below the logo / title in the top header</small>
+            </label>
+            <input
+              id="settingSubtitle"
+              name="subtitle"
+              type="text"
+              maxlength="150"
+              placeholder="e.g. Luxury Fragrance Collection"
+              class="setting-control"
+            />
+          </div>
+
+          <!-- Logo Field -->
+          <div class="setting-row">
+            <label for="settingLogo" class="setting-label">
+              <span>Logo (Icon Symbol or Image URL)</span>
+              <small>Enter an emoji icon (e.g. ⚜️, 👑, 💎), paste an image URL, or upload/drop a file</small>
+            </label>
+            <div class="logo-control-wrap">
+              <div class="logo-input-container">
+                <input
+                  id="settingLogo"
+                  name="logo"
+                  type="text"
+                  maxlength="5000000"
+                  required
+                  placeholder="e.g. ⚜️, https://example.com/logo.png, or /uploads/..."
+                  class="setting-control"
+                />
+
+                <!-- Drag & Drop / File Upload Zone -->
+                <div class="logo-dropzone" id="logoDropzone" role="button" tabindex="0" aria-label="Upload logo by dragging and dropping or browsing file">
+                  <input
+                    type="file"
+                    id="logoFileInput"
+                    accept="image/png,image/jpeg,image/webp,image/svg+xml,image/gif,image/x-icon"
+                    style="display: none;"
+                  />
+                  <div class="dropzone-content">
+                    <span class="dropzone-icon" aria-hidden="true">📤</span>
+                    <div class="dropzone-text">
+                      <strong>Drag &amp; drop file here</strong> or <span class="dropzone-browse-link">browse file</span>
+                    </div>
+                    <span class="dropzone-hint">PNG, JPG, SVG, WEBP or GIF</span>
+                  </div>
+                </div>
+
+                <div id="logoUploadInfo" class="logo-upload-info" hidden>
+                  <span class="upload-info-icon" aria-hidden="true">✓</span>
+                  <span id="logoUploadName" class="upload-info-name">logo.png</span>
+                  <button type="button" id="logoClearUploadBtn" class="upload-clear-btn" title="Remove uploaded file">✕</button>
+                </div>
+
+                <div class="logo-preset-bar" role="group" aria-label="Quick logo presets">
+                  <span class="presets-caption">Presets:</span>
+                  <button type="button" class="preset-pill" data-symbol="⚜️" title="Fleur-de-lis">⚜️</button>
+                  <button type="button" class="preset-pill" data-symbol="👑" title="Crown">👑</button>
+                  <button type="button" class="preset-pill" data-symbol="💎" title="Diamond">💎</button>
+                  <button type="button" class="preset-pill" data-symbol="🌸" title="Flower">🌸</button>
+                  <button type="button" class="preset-pill" data-symbol="✨" title="Sparkle">✨</button>
+                  <button type="button" class="preset-pill" data-symbol="🌹" title="Rose">🌹</button>
+                  <button type="button" class="preset-pill" data-symbol="🌿" title="Botanical">🌿</button>
+                </div>
+              </div>
+              <div class="logo-preview-card" id="logoPreviewCard" title="Live crest preview (you can also drop files here)">
+                <span class="preview-label">Preview</span>
+                <div class="brand-crest mini-preview-crest" id="logoPreviewCrest">
+                  <span class="crest-symbol" id="logoPreviewSymbol">⚜️</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Foot Tag Field -->
+          <div class="setting-row">
+            <label for="settingFootTag" class="setting-label">
+              <span>Foot Tag (Footer Tag / Note)</span>
+              <small>Tagline or note displayed in the site footer</small>
+            </label>
+            <textarea
+              id="settingFootTag"
+              name="footTag"
+              rows="2"
+              maxlength="500"
+              required
+              placeholder="e.g. HAUTE PARFUMERIE • PKA SCENT — Exclusive Fragrance Discovery &amp; Scraper Portal"
+              class="setting-control setting-textarea"
+            ></textarea>
+          </div>
+
+          <!-- Default View Website Field -->
+          <div class="setting-row">
+            <label for="settingDefaultWebsite" class="setting-label">
+              <span>Default View Website</span>
+              <small>Default website view for frontend catalogue and backend scraper</small>
+            </label>
+            <select id="settingDefaultWebsite" name="defaultWebsite" class="setting-control">
+              <option value="fragrantica" selected>Fragrantica</option>
+              <option value="foodpanda">Foodpanda</option>
+            </select>
+          </div>
+
+          <!-- Telegram Bot Scraper Integration Section -->
+          <div class="setting-section-divider">
+            <span class="section-divider-title">✈️ Telegram Bot Scraper Integration</span>
+          </div>
+
+          <!-- Telegram Bot Enable Switch & Direct Link -->
+          <div class="setting-row">
+            <label class="setting-label" for="settingTelegramBotEnabled">
+              <span>Automated Telegram Bot Scraper</span>
+              <small>Send perfume links to your Telegram bot to automatically scrape and add to catalogue</small>
+            </label>
+            <div class="telegram-switch-row">
+              <label class="switch">
+                <input id="settingTelegramBotEnabled" name="telegramBotEnabled" type="checkbox" checked />
+                <span class="switch-track" aria-hidden="true"></span>
+                <span id="telegramStatusLabel">Bot Scraper Active</span>
+              </label>
+              <a
+                id="telegramBotDirectLink"
+                href="https://t.me/pkascent_bot"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="telegram-bot-link-btn"
+                title="Open Bot in Telegram"
+              >
+                <span>✈️ Open @pkascent_bot</span>
+                <span class="ext-icon" aria-hidden="true">↗</span>
+              </a>
+            </div>
+          </div>
+
+          <!-- Telegram Bot Token Field -->
+          <div class="setting-row">
+            <label for="settingTelegramBotToken" class="setting-label">
+              <span>Telegram Bot HTTP API Token</span>
+              <small>Token to access the HTTP API from @BotFather</small>
+            </label>
+            <input
+              id="settingTelegramBotToken"
+              name="telegramBotToken"
+              type="text"
+              required
+              placeholder="e.g. 8670278807:AAGODQKhNr4vdnWnI47AEEzNftRAqzkMGO0"
+              class="setting-control"
+              value="8670278807:AAGODQKhNr4vdnWnI47AEEzNftRAqzkMGO0"
+            />
+          </div>
+
+          <!-- Bot Username & Telegram Contact Duo -->
+          <div class="setting-row-duo">
+            <div class="setting-subfield">
+              <label for="settingTelegramBotUsername" class="setting-label">
+                <span>Bot Username</span>
+                <small>Telegram bot handle</small>
+              </label>
+              <input
+                id="settingTelegramBotUsername"
+                name="telegramBotUsername"
+                type="text"
+                placeholder="pkascent_bot"
+                class="setting-control"
+                value="pkascent_bot"
+              />
+            </div>
+            <div class="setting-subfield">
+              <label for="settingTelegramContact" class="setting-label">
+                <span>Telegram Contact</span>
+                <small>example (+85510666813)</small>
+              </label>
+              <input
+                id="settingTelegramContact"
+                name="telegramContact"
+                type="text"
+                placeholder="+85510666813"
+                class="setting-control"
+                value="+85510666813"
+              />
+            </div>
+          </div>
+
+          <!-- Telegram Contact Floating Button on Frontend Switch -->
+          <div class="setting-row">
+            <label class="setting-label" for="settingTelegramContactEnabled">
+              <span>Show Telegram Contact Floating Button</span>
+              <small>Show telegram button popup at bottom right and freeze on frontend</small>
+            </label>
+            <div class="telegram-switch-row">
+              <label class="switch">
+                <input id="settingTelegramContactEnabled" name="telegramContactEnabled" type="checkbox" checked />
+                <span class="switch-track" aria-hidden="true"></span>
+                <span id="telegramContactStatusLabel">Floating Button Active</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Telegram Bot Actions & Connection Test Card -->
+          <div class="telegram-bot-card" id="telegramBotCard">
+            <div class="telegram-card-header">
+              <div class="telegram-badge-group">
+                <span class="telegram-status-dot active" id="telegramStatusDot"></span>
+                <span class="telegram-bot-name" id="telegramBotDisplayName">@pkascent_bot</span>
+                <span class="telegram-pill-tag">HTTP API Verified</span>
+              </div>
+              <div class="telegram-card-actions">
+                <button type="button" id="testTelegramBtn" class="secondary-button telegram-action-btn">
+                  ⚡ Test Connection
+                </button>
+                <button type="button" id="sendTelegramTestMsgBtn" class="secondary-button telegram-action-btn">
+                  📨 Send Test Link
+                </button>
+              </div>
+            </div>
+            <p id="telegramFeedbackMsg" class="telegram-feedback-msg" hidden></p>
+          </div>
+        </div>
+
+        <p id="settingsStatusMsg" class="settings-status-msg" role="alert" hidden></p>
+
+        <div class="editor-actions settings-actions">
+          <button id="resetSettingsBtn" class="secondary-button reset-btn" type="button">
+            Reset to defaults
+          </button>
+          <div class="actions-group-right">
+            <button id="cancelSettingsBtn" class="secondary-button" type="button">Cancel</button>
+            <button id="saveSettingsBtn" class="primary-button" type="submit">Save settings</button>
+          </div>
+        </div>
+      </form>
+    </dialog>
+
+    <!-- Floating Controls: Multi-Select Copy Image & Telegram Contact (Frontend - Frozen Bottom Right) -->
+    <aside id="telegramFloatingWidget" class="telegram-floating-widget" aria-label="Floating Controls">
+      <!-- Floating Multi-Select Copy Image Bar (Frozen at Bottom Right) -->
+      <div class="floating-copy-bar" id="floatingCopyBar" hidden>
+        <button id="copySelectedImgBtn" class="copy-selected-btn" type="button" title="Copy selected perfumes as image for Telegram" aria-label="Copy selected perfumes as image">
+          <span class="copy-btn-icon">
+            <svg class="copy-btn-icon-svg" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+            </svg>
+          </span>
+          <span class="copy-btn-label">(<span id="selectedCountNum">0</span>)</span>
+        </button>
+        <button id="clearSelectionBtn" class="selection-clear-btn" type="button" title="Clear selection" aria-label="Clear selection">✕</button>
+      </div>
+
+      <!-- Floating Bar with Telegram Icon Button on Left and Chat Button on Right -->
+      <div class="telegram-floating-bar" id="telegramFloatingBar">
+        <a
+          id="telegramFloatingBtn"
+          href="https://t.me/+85510666813"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="telegram-floating-btn"
+          aria-label="Chat on Telegram"
+          title="Chat on Telegram (+85510666813)"
+        >
+          <span class="telegram-btn-ripple" aria-hidden="true"></span>
+          <img src="/telegram-icon.png" alt="Telegram" class="telegram-btn-3d-img" />
+          <span class="telegram-btn-badge" aria-hidden="true">1</span>
+        </a>
+
+        <a
+          id="telegramFloatingPillBtn"
+          href="https://t.me/+85510666813"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="telegram-btn-exact telegram-pill-float"
+          title="Chat on Telegram (+85510666813)"
+        >
+          <span id="telegramFloatingPillLabel" class="btn-label-text">Chat on Telegram (+85510666813)</span>
+          <span class="btn-arrow-icon">↗</span>
+        </a>
+      </div>
+    </aside>
+
+    <!-- Mobile Image Sharing / Clipboard Modal -->
+    <dialog id="mobileImageModal" class="mobile-image-modal" aria-labelledby="mobileModalTitle">
+      <div class="mobile-modal-content">
+        <div class="mobile-modal-header">
+          <h3 id="mobileModalTitle" class="mobile-modal-heading">📸 Perfume Image Ready</h3>
+          <button id="closeMobileModalBtn" class="mobile-modal-close" type="button" aria-label="Close dialog">✕</button>
+        </div>
+        <p class="mobile-modal-hint">
+          <strong>Tip for Mobile:</strong> Press & hold the image below and tap <strong>"Copy"</strong> to paste directly into Telegram chat!
+        </p>
+        <div class="mobile-image-preview-wrap">
+          <img id="mobilePreviewImg" class="mobile-preview-img" alt="Perfume preview" />
+        </div>
+        <div class="mobile-modal-actions">
+          <button id="mobileShareTelegramBtn" class="mobile-action-btn primary" type="button">
+            <span>✈️ Share to Telegram</span>
+          </button>
+          <button id="mobileDownloadImgBtn" class="mobile-action-btn secondary" type="button">
+            <span>📥 Download Image</span>
+          </button>
+        </div>
+      </div>
+    </dialog>
+
+    <!-- Toast Notification for Copy as Image & Actions -->
+    <div id="toastContainer" class="toast-container" aria-live="polite"></div>
+
+    <script src="/html2canvas.min.js"></script>
     <script src="/app.js"></script>
   </body>
 </html>

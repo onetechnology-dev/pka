@@ -99,6 +99,7 @@ async function scrapeFoodpanda(targetUrl, options = {}) {
     productOutputPath = path.join(__dirname, "foodpanda-products.json"),
     debugOutputPath = path.join(__dirname, "foodpanda-network-debug.json"),
     onStatus = () => {},
+    persist = true,
   } = options;
 
   onStatus("Launching browser");
@@ -167,8 +168,10 @@ async function scrapeFoodpanda(targetUrl, options = {}) {
       ).values()
     );
 
-    fs.writeFileSync(productOutputPath, JSON.stringify(uniqueProducts, null, 2));
-    fs.writeFileSync(debugOutputPath, JSON.stringify(jsonResponses, null, 2));
+    if (persist) {
+      fs.writeFileSync(productOutputPath, JSON.stringify(uniqueProducts, null, 2));
+      fs.writeFileSync(debugOutputPath, JSON.stringify(jsonResponses, null, 2));
+    }
 
     onStatus(`Found ${uniqueProducts.length} products`);
 
@@ -191,13 +194,7 @@ if (require.main === module) {
     process.exit(1);
   }
 
-  scrapeFoodpanda(targetUrl, {
-    headless: false,
-    onStatus: (message) => console.log(message),
-  })
-    .then(({ products }) => {
-      console.table(products);
-    })
+  require("./run-cli").runCli("foodpanda", scrapeFoodpanda, process.argv.slice(2))
     .catch((error) => {
       console.error(error.message);
       process.exit(1);

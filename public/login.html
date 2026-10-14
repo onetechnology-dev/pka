@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Admin Login | PKA SCENT Luxury Management</title>
+    <link rel="stylesheet" href="/styles.css" />
+    <style>
+      body.login-page {
+        min-height: 100vh;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: radial-gradient(circle at 50% 20%, #2e0921 0%, #15020f 75%, #0d010a 100%);
+        color: #ffffff;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        padding: 24px;
+        box-sizing: border-box;
+      }
+      .login-container {
+        width: 100%;
+        max-width: 440px;
+        text-align: center;
+      }
+      .login-brand-crest {
+        width: 64px;
+        height: 64px;
+        margin: 0 auto 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 32px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #43102d 0%, #200416 100%);
+        border: 2px solid rgba(212, 175, 55, 0.45);
+        box-shadow: 0 0 25px rgba(212, 175, 55, 0.22);
+      }
+      .login-title {
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 32px;
+        letter-spacing: 2px;
+        margin: 0 0 6px;
+        color: #ffffff;
+      }
+      .login-eyebrow {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        color: #d4af37;
+        margin: 0 0 28px;
+        font-weight: 700;
+      }
+      .login-card {
+        background: #ffffff;
+        color: #211620;
+        border-radius: 16px;
+        padding: 36px 32px;
+        text-align: left;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+      }
+      .login-card-heading {
+        margin: 0 0 8px;
+        font-size: 20px;
+        font-weight: 750;
+        color: #310822;
+      }
+      .login-card-desc {
+        margin: 0 0 24px;
+        font-size: 13px;
+        color: #6a5766;
+        line-height: 1.45;
+      }
+      .login-form-group {
+        margin-bottom: 20px;
+      }
+      .login-form-group label {
+        display: block;
+        font-size: 13px;
+        font-weight: 700;
+        color: #3b2034;
+        margin-bottom: 8px;
+      }
+      .login-input {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 12px 14px;
+        border: 1px solid #d9cbda;
+        border-radius: 8px;
+        font-size: 15px;
+        color: #211620;
+        background: #fbf9fa;
+        transition: all 160ms ease;
+      }
+      .login-input:focus {
+        outline: none;
+        border-color: #8c235b;
+        background: #ffffff;
+        box-shadow: 0 0 0 3px rgba(140, 35, 91, 0.16);
+      }
+      .login-btn {
+        width: 100%;
+        padding: 13px;
+        border-radius: 8px;
+        font-size: 15px;
+        font-weight: 750;
+        letter-spacing: 0.5px;
+        background: linear-gradient(135deg, #4e1539 0%, #2e0720 100%);
+        color: #ffffff;
+        border: 1px solid rgba(212, 175, 55, 0.35);
+        cursor: pointer;
+        transition: all 180ms ease;
+        margin-top: 8px;
+      }
+      .login-btn:hover {
+        background: linear-gradient(135deg, #64194a 0%, #3e0b2c 100%);
+        box-shadow: 0 4px 16px rgba(78, 21, 57, 0.35);
+        transform: translateY(-1px);
+      }
+      .login-btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+      }
+      .login-error {
+        background: #fdf2f4;
+        color: #a52343;
+        border: 1px solid #f2cad3;
+        padding: 10px 14px;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 600;
+        margin-bottom: 18px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .login-hint {
+        margin-top: 20px;
+        padding-top: 18px;
+        border-top: 1px dashed #ded4dc;
+        font-size: 12px;
+        color: #7d6b79;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .login-footer-links {
+        margin-top: 24px;
+        text-align: center;
+      }
+      .login-footer-links a {
+        color: rgba(255, 255, 255, 0.75);
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 600;
+        transition: color 150ms ease;
+      }
+      .login-footer-links a:hover {
+        color: #d4af37;
+      }
+    </style>
+  </head>
+  <body class="login-page">
+    <div class="login-container">
+      <div class="login-brand-crest" aria-hidden="true">⚜️</div>
+      <h1 class="login-title">PKA SCENT</h1>
+      <p class="login-eyebrow">Haute Parfumerie • Management Portal</p>
+
+      <div class="login-card">
+        <h2 class="login-card-heading">Admin Sign In</h2>
+        <p class="login-card-desc">Enter your administrative credentials to manage products and scrapers.</p>
+
+        <div id="loginError" class="login-error" role="alert" hidden>
+          <span>⚠️</span> <span id="loginErrorMsg">Invalid username or password.</span>
+        </div>
+
+        <form id="adminLoginForm">
+          <div class="login-form-group">
+            <label for="username">Username</label>
+            <input
+              id="username"
+              name="username"
+              type="text"
+              class="login-input"
+              value="admin"
+              autocomplete="username"
+              required
+            />
+          </div>
+
+          <div class="login-form-group">
+            <label for="password">Password</label>
+            <input
+              id="password"
+              name="password"
+              type="password"
+              class="login-input"
+              placeholder="Enter password"
+              autocomplete="current-password"
+              required
+              autofocus
+            />
+          </div>
+
+          <button id="loginSubmitBtn" type="submit" class="login-btn">
+            Sign In to Dashboard →
+          </button>
+        </form>
+
+        <div class="login-hint">
+          <span>Administrator Access</span>
+          <span>User: <strong>admin</strong></span>
+        </div>
+      </div>
+
+      <div class="login-footer-links">
+        <a href="/">← Return to Customer Storefront</a>
+      </div>
+    </div>
+
+    <script>
+      const form = document.querySelector("#adminLoginForm");
+      const usernameInput = document.querySelector("#username");
+      const passwordInput = document.querySelector("#password");
+      const errorBox = document.querySelector("#loginError");
+      const errorMsg = document.querySelector("#loginErrorMsg");
+      const submitBtn = document.querySelector("#loginSubmitBtn");
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Verifying...";
+        errorBox.hidden = true;
+
+        try {
+          const response = await fetch("/api/admin/login", {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({
+              username: usernameInput.value.trim(),
+              password: passwordInput.value.trim(),
+            }),
+          });
+          const result = await response.json();
+          if (!response.ok) {
+            throw new Error(result.error || "Authentication failed. Check your password.");
+          }
+          window.location.href = result.redirect || "/admin";
+        } catch (err) {
+          errorMsg.textContent = err.message;
+          errorBox.hidden = false;
+          submitBtn.disabled = false;
+          submitBtn.textContent = "Sign In to Dashboard →";
+          passwordInput.select();
+        }
+      });
+    </script>
+  </body>
+</html>
+

@@ -4,6 +4,8 @@ node_modules/
 # Generated scraper output
 foodpanda-products.json
 foodpanda-network-debug.json
+fragrantica-products.json
+.fragrantica-session.json*
 
 # Logs
 *.log
@@ -15,6 +17,7 @@ pnpm-debug.log*
 # Environment files
 .env
 .env.*
+!.env.example
 
 # OS/editor files
 .DS_Store

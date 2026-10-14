@@ -1,0 +1,81 @@
+Update add new feature scraper from website: https://www.fragrantica.com/perfume/Prada/Prada-Paradoxe-Intense-83988.html as column value below:
+-Product Name
+-Product Photo
+-Brand
+-Main Accords
+-Top Notes
+-Base Notes
+
+Fix feature scraper from website: https://www.fragrantica.com/perfume/Prada/Prada-Paradoxe-Intense-83988.html as column value below:
+-Product Name (html tag: itemprop="name" -> value)
+-Product Photo (html tag: itemprop="image" -> value)
+-Brand (html tag: itemprop="brand" -> itemprop="name" -> value)
+-Main Accords (Below html tag: h6 with text value "main accords" clone all backgournd cloor and text color as below:
+"<div class="flex flex-col w-full max-w-[280px] md:max-w-[320px]"><div class="w-full"><div class="h-5 md:h-7 rounded-br-lg flex items-center justify-center px-2 md:px-3 text-xs md:text-sm font-medium transition-all duration-200 hover:scale-[1.02]" style="color: rgb(0, 0, 0); background: rgb(237, 242, 251); opacity: 1; width: 100%;"><span class="truncate">white floral</span></div></div><div class="w-full"><div class="h-5 md:h-7 rounded-br-lg flex items-center justify-center px-2 md:px-3 text-xs md:text-sm font-medium transition-all duration-200 hover:scale-[1.02]" style="color: rgb(0, 0, 0); background: rgb(255, 254, 192); opacity: 0.835672; width: 80.8284%;"><span class="truncate">vanilla</span></div></div><div class="w-full"><div class="h-5 md:h-7 rounded-br-lg flex items-center justify-center px-2 md:px-3 text-xs md:text-sm font-medium transition-all duration-200 hover:scale-[1.02]" style="color: rgb(0, 0, 0); background: rgb(249, 255, 82); opacity: 0.81629; width: 78.5671%;"><span class="truncate">citrus</span></div></div><div class="w-full"><div class="h-5 md:h-7 rounded-br-lg flex items-center justify-center px-2 md:px-3 text-xs md:text-sm font-medium transition-all duration-200 hover:scale-[1.02]" style="color: rgb(255, 255, 255); background: rgb(91, 107, 50); opacity: 0.762357; width: 72.275%;"><span class="truncate">mossy</span></div></div><div class="w-full"><div class="h-5 md:h-7 rounded-br-lg flex items-center justify-center px-2 md:px-3 text-xs md:text-sm font-medium transition-all duration-200 hover:scale-[1.02]" style="color: rgb(255, 255, 255); background: rgb(188, 77, 16); opacity: 0.720222; width: 67.3593%;"><span class="truncate">amber</span></div></div><div class="w-full"><div class="h-5 md:h-7 rounded-br-lg flex items-center justify-center px-2 md:px-3 text-xs md:text-sm font-medium transition-all duration-200 hover:scale-[1.02]" style="color: rgb(0, 0, 0); background: rgb(252, 75, 41); opacity: 0.683775; width: 63.1071%;"><span class="truncate">fruity</span></div></div><div class="w-full"><div class="h-5 md:h-7 rounded-br-lg flex items-center justify-center px-2 md:px-3 text-xs md:text-sm font-medium transition-all duration-200 hover:scale-[1.02]" style="color: rgb(255, 255, 255); background: rgb(238, 54, 59); opacity: 0.67632; width: 62.2374%;"><span class="truncate">sweet</span></div></div><div class="w-full"><div class="h-5 md:h-7 rounded-br-lg flex items-center justify-center px-2 md:px-3 text-xs md:text-sm font-medium transition-all duration-200 hover:scale-[1.02]" style="color: rgb(0, 0, 0); background: rgb(155, 229, 237); opacity: 0.669576; width: 61.4506%;"><span class="truncate">fresh</span></div></div><div class="w-full"><div class="h-5 md:h-7 rounded-br-lg flex items-center justify-center px-2 md:px-3 text-xs md:text-sm font-medium transition-all duration-200 hover:scale-[1.02]" style="color: rgb(255, 255, 255); background: rgb(84, 72, 56); opacity: 0.653651; width: 59.5926%;"><span class="truncate">earthy</span></div></div><div class="w-full"><div class="h-5 md:h-7 rounded-br-lg flex items-center justify-center px-2 md:px-3 text-xs md:text-sm font-medium transition-all duration-200 hover:scale-[1.02]" style="color: rgb(0, 0, 0); background: rgb(238, 221, 204); opacity: 0.601149; width: 53.4674%;"><span class="truncate">powdery</span></div></div></div>"
+
+-Top Notes (below html tag span: "Top Notes" clone all loading="lazy" -> value and span->value "<div class="flex flex-wrap justify-center items-end py-3 px-2 pyramid-level-container" style="gap: 0.75rem;"><a href="https://www.fragrantica.com/notes/Neroli-17.html" class="group relative flex flex-col items-center text-center pyramid-note-link" style="opacity: 1;"><div class="relative"><img loading="lazy" src="https://fimgs.net/mdimg/sastojci/t.17.jpg" class="rounded-md shadow-xs ring-1 ring-zinc-200/20 dark:ring-zinc-700/30 transition-all duration-300 ease-out group-hover:scale-110 group-hover:shadow-md group-hover:ring-teal-400/40 dark:group-hover:ring-teal-500/40" alt="Neroli" style="width: 4.575rem;"></div><span class="pyramid-note-label mt-1.5 text-[11px] sm:text-sm font-medium text-zinc-600 dark:text-zinc-200 group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors duration-200 whitespace-nowrap"> Neroli </span></a><a href="https://www.fragrantica.com/notes/Pear-182.html" class="group relative flex flex-col items-center text-center pyramid-note-link" style="opacity: 1;"><div class="relative"><img loading="lazy" src="https://fimgs.net/mdimg/sastojci/t.182.jpg" class="rounded-md shadow-xs ring-1 ring-zinc-200/20 dark:ring-zinc-700/30 transition-all duration-300 ease-out group-hover:scale-110 group-hover:shadow-md group-hover:ring-teal-400/40 dark:group-hover:ring-teal-500/40" alt="Pear" style="width: 4.525rem;"></div><span class="pyramid-note-label mt-1.5 text-[11px] sm:text-sm font-medium text-zinc-600 dark:text-zinc-200 group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors duration-200 whitespace-nowrap"> Pear </span></a><a href="https://www.fragrantica.com/notes/Bergamot-75.html" class="group relative flex flex-col items-center text-center pyramid-note-link" style="opacity: 0.886308;"><div class="relative"><img loading="lazy" src="https://fimgs.net/mdimg/sastojci/t.75.jpg" class="rounded-md shadow-xs ring-1 ring-zinc-200/20 dark:ring-zinc-700/30 transition-all duration-300 ease-out group-hover:scale-110 group-hover:shadow-md group-hover:ring-teal-400/40 dark:group-hover:ring-teal-500/40" alt="Bergamot" style="width: 3.225rem;"></div><span class="pyramid-note-label mt-1.5 text-[11px] sm:text-sm font-medium text-zinc-600 dark:text-zinc-200 group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors duration-200 whitespace-nowrap"> Bergamot </span></a></div>"
+-Base Notes (below html tag span: "Base Notes" clone all loading="lazy" -> value and span->value "<div class="flex flex-wrap justify-center items-end py-3 px-2 pyramid-level-container" style="gap: 0.75rem;"><a href="https://www.fragrantica.com/notes/Vanilla-74.html" class="group relative flex flex-col items-center text-center pyramid-note-link" style="opacity: 1;"><div class="relative"><img loading="lazy" src="https://fimgs.net/mdimg/sastojci/t.74.jpg" class="rounded-md shadow-xs ring-1 ring-zinc-200/20 dark:ring-zinc-700/30 transition-all duration-300 ease-out group-hover:scale-110 group-hover:shadow-md group-hover:ring-teal-400/40 dark:group-hover:ring-teal-500/40" alt="Bourbon Vanilla" style="width: 5rem;"></div><span class="pyramid-note-label mt-1.5 text-[11px] sm:text-sm font-medium text-zinc-600 dark:text-zinc-200 group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors duration-200 whitespace-nowrap"> Bourbon Vanilla </span></a><a href="https://www.fragrantica.com/notes/Vanilla-74.html" class="group relative flex flex-col items-center text-center pyramid-note-link" style="opacity: 1;"><div class="relative"><img loading="lazy" src="https://fimgs.net/mdimg/sastojci/t.74.jpg" class="rounded-md shadow-xs ring-1 ring-zinc-200/20 dark:ring-zinc-700/30 transition-all duration-300 ease-out group-hover:scale-110 group-hover:shadow-md group-hover:ring-teal-400/40 dark:group-hover:ring-teal-500/40" alt="Vanilla" style="width: 5rem;"></div><span class="pyramid-note-label mt-1.5 text-[11px] sm:text-sm font-medium text-zinc-600 dark:text-zinc-200 group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors duration-200 whitespace-nowrap"> Vanilla </span></a><a href="https://www.fragrantica.com/notes/Amber-54.html" class="group relative flex flex-col items-center text-center pyramid-note-link" style="opacity: 1;"><div class="relative"><img loading="lazy" src="https://fimgs.net/mdimg/sastojci/t.54.jpg" class="rounded-md shadow-xs ring-1 ring-zinc-200/20 dark:ring-zinc-700/30 transition-all duration-300 ease-out group-hover:scale-110 group-hover:shadow-md group-hover:ring-teal-400/40 dark:group-hover:ring-teal-500/40" alt="Amber" style="width: 4.05rem;"></div><span class="pyramid-note-label mt-1.5 text-[11px] sm:text-sm font-medium text-zinc-600 dark:text-zinc-200 group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors duration-200 whitespace-nowrap"> Amber </span></a><a href="https://www.fragrantica.com/notes/Ambrofix--1457.html" class="group relative flex flex-col items-center text-center pyramid-note-link" style="opacity: 0.881966;"><div class="relative"><img loading="lazy" src="https://fimgs.net/mdimg/sastojci/t.1457.jpg" class="rounded-md shadow-xs ring-1 ring-zinc-200/20 dark:ring-zinc-700/30 transition-all duration-300 ease-out group-hover:scale-110 group-hover:shadow-md group-hover:ring-teal-400/40 dark:group-hover:ring-teal-500/40" alt="Ambrofix™" style="width: 3.2rem;"></div><span class="pyramid-note-label mt-1.5 text-[11px] sm:text-sm font-medium text-zinc-600 dark:text-zinc-200 group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors duration-200 whitespace-nowrap"> Ambrofix™ </span></a><a href="https://www.fragrantica.com/notes/Serenolide-1446.html" class="group relative flex flex-col items-center text-center pyramid-note-link" style="opacity: 0.735089;"><div class="relative"><img loading="lazy" src="https://fimgs.net/mdimg/sastojci/t.1446.jpg" class="rounded-md shadow-xs ring-1 ring-zinc-200/20 dark:ring-zinc-700/30 transition-all duration-300 ease-out group-hover:scale-110 group-hover:shadow-md group-hover:ring-teal-400/40 dark:group-hover:ring-teal-500/40" alt="Serenolide" style="width: 2.5rem;"></div><span class="pyramid-note-label mt-1.5 text-[11px] sm:text-sm font-medium text-zinc-600 dark:text-zinc-200 group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors duration-200 whitespace-nowrap"> Serenolide </span></a></div>"
+
+-Update fix view image logo brand, image each Top Notes and image each Base Notes on ouput table after scraper. 
+-Update add new feature frontend to display product after scraper as ux/ui on image.
+-Update add new column name: Status (Active, Deactive), Action with option (Edit, Delete)
+-Update add new logic scraper multiple data it is not overwrite if it is the same link and data, it will show message confirm before overwrite.
+-Update add new feature store data on database name scraper with mysql user: root, password: 266$66M$ng
+
+-Update add new logic scraper clone all loading="lazy" -> value and span->value from div id="pyramid" for fix some product are not have html tag span "Top Notes" or have any html tag name like "Fragrance Notes".
+-Update fix feature scraper without show browser.
+-Update fix logic scraper silent when feature Show browser is off.
+-Update add new column name: Gender by split from method scraper product name, example product name "Eros Energy Versace for men" split for men or for women after string product name to men or women to column name: Gender.
+-Update add new feature checkbox filter name: Men, Women after input filter base on string (for men, for women) after product name, example "Eros Energy Versace for men" this product name for men.
+-Update apply ux/ui backend and frontend as below:
+-Backend for user admin scraper, view,add,edit,delete.
+-Frontend for user user view as product view with header name: PKA SCENT.
+
+
+-Update seperate view backend and frontend as below:
+-Set default url for frontend: http://localhost:7000/
+-Set default url for backend: http://localhost:7000/admin and create password:123 for user:admin.
+-Disappear text "One link per line. New products are added to your saved collection.", button "Copy JSON", "DOWNLOAD JSON".
+-Update seperate view backend and frontend as below:
+-Disappear all button with header on frontend.
+-Set Default website view: Fragrantica for frontend and backend.
+-Create Profesional Module login form for backend.
+-Disappear Dropdown select website after Fragrantica perfume URLs
+and add select defualt view website on Settings.
+
+-Update ux/ui frontend as below:
+-Disappear Button "FOR MEN or FOR WOMEN" on the right top of header product name.
+-Disappear active, Fragrance Collection, Product View, Table.
+-Apply freez header.
+-Show product view as one row like product view with desktop screen follow image attach file.
+ 
+-Update apply width Fragrantica perfume URLs to fit with ux/ui.
+-Update add feature drag and drop file or upload file for Logo (Icon Symbol or Image URL).
+-Update add new feature on settings for send link to telegram bot to scrapper base on telegram bot as below:
+bot user: pkascent_bot
+token to access the HTTP API: 8670278807:AAGODQKhNr4vdnWnI47AEEzNftRAqzkMGO0
+
+-Update change Target Chat ID (Optional) to Telegram Contact, example (+85510666813) on settings to show telegram button popup at bottom right and freez on frontend.
+
+-Update apply show telegram button and icon telegram on frontend base on image on attach file.
+
+-Update remove on icon btn-airplane-icon and move button icon telegram to left button "Chat on Telegram (+85510666813)" and remove telegramContactPopup and apply desktop and mobile screen show button "Chat on Telegram (+85510666813)" with button button telegram left as the same.
+
+-Update new feature click hold to select copy as image on each panel perfume frontend for past to telegram chat.
+
+-Update change logic feature click hold to select copy as image as below:
+-Apply click hold for multiple select and disappear button copy image at the top right panel perfume and and button copy image at bottom right and freez for copy image multiple selected.
+-Fix copy as image clipboard on mobile it is not working, it is show download image.
+
+-Update fix missing image on copy as image clipboard.
+-Update pickup color for each Main accords on Add/Edit product.
+
+-Update move this text "Luxury Fragrance Collection" to below logo "PKA SCENT"
+-Update Change from Copy Select (x) as image to only icon copy (x) 
+-Update move button copy on bottom left before button telegram.
+
+-Update new feature filter name: Unisex.
+-Update add add/edit subtitle "Luxury Fragrance Collection" below header logo on settings.
+-Update add count item after each filter name, example (MEN(XX), WOMEN(XX), UNISEX(XX)
+-Update feature copy as image on multiple select as seperate each image per panel
+-Update feature copy as image multiple select into one clipboard as seperate each image per panel without module popup as attach file.
