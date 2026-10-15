@@ -13,6 +13,9 @@ async function launchChromium(options = {}) {
       "--disable-dev-shm-usage",
       "--disable-gpu",
       "--no-first-run",
+      "--window-size=1440,1000",
+      "--lang=en-US,en",
+      "--disable-infobars",
     ],
     ignoreDefaultArgs: ["--enable-automation"],
   };

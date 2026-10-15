@@ -238,6 +238,143 @@ function extractFragranticaProduct() {
   return { name, photo, brand, brandLogo, mainAccords, ...groups };
 }
 
+async function applyStealth(page) {
+  await page.addInitScript(() => {
+    try {
+      const proto = Object.getPrototypeOf(navigator);
+      delete proto.webdriver;
+      Object.defineProperty(proto, "webdriver", { get: () => undefined, configurable: true });
+    } catch (_) {}
+
+    try {
+      if (!window.chrome) {
+        window.chrome = {
+          app: { isInstalled: false, InstallState: { DISABLED: "disabled", INSTALLED: "installed", NOT_INSTALLED: "not_installed" }, RunningState: { CANNOT_RUN: "cannot_run", READY_TO_RUN: "ready_to_run", RUNNING: "running" } },
+          runtime: {
+            OnInstalledReason: { CHROME_UPDATE: "chrome_update", INSTALL: "install", SHARED_MODULE_UPDATE: "shared_module_update", UPDATE: "update" },
+            OnRestartRequiredReason: { APP_UPDATE: "app_update", OS_UPDATE: "os_update", PERIODIC: "periodic" },
+            PlatformArch: { ARM: "arm", ARM64: "arm64", MIPS: "mips", MIPS64: "mips64", X86_32: "x86-32", X86_64: "x86-64" },
+            PlatformNaclArch: { ARM: "arm", MIPS: "mips", MIPS64: "mips64", X86_32: "x86-32", X86_64: "x86-64" },
+            PlatformOs: { ANDROID: "android", CROS: "cros", LINUX: "linux", MAC: "mac", OPENBSD: "openbsd", WIN: "win" },
+            RequestUpdateCheckStatus: { NO_UPDATE: "no_update", THROTTLED: "throttled", UPDATE_AVAILABLE: "update_available" },
+          },
+          loadTimes: function () {},
+          csi: function () {},
+        };
+      }
+    } catch (_) {}
+
+    try {
+      const fakePlugins = [
+        { name: "PDF Viewer", filename: "internal-pdf-viewer", description: "Portable Document Format" },
+        { name: "Chrome PDF Viewer", filename: "internal-pdf-viewer", description: "Portable Document Format" },
+        { name: "Chromium PDF Viewer", filename: "internal-pdf-viewer", description: "Portable Document Format" },
+        { name: "Microsoft Edge PDF Viewer", filename: "internal-pdf-viewer", description: "Portable Document Format" },
+        { name: "WebKit built-in PDF", filename: "internal-pdf-viewer", description: "Portable Document Format" },
+      ];
+      Object.defineProperty(navigator, "plugins", {
+        get: () => Object.assign([...fakePlugins], {
+          item: (i) => fakePlugins[i] || null,
+          namedItem: (n) => fakePlugins.find((p) => p.name === n) || null,
+          refresh: () => {},
+        }),
+        configurable: true,
+      });
+    } catch (_) {}
+
+    try {
+      Object.defineProperty(navigator, "languages", {
+        get: () => ["en-US", "en"],
+        configurable: true,
+      });
+    } catch (_) {}
+
+    try {
+      const getParameterProto = WebGLRenderingContext.prototype.getParameter;
+      WebGLRenderingContext.prototype.getParameter = function (parameter) {
+        if (parameter === 37445) return "Google Inc. (NVIDIA)";
+        if (parameter === 37446) return "ANGLE (NVIDIA, NVIDIA GeForce RTX 3060 Direct3D11 vs_5_0 ps_5_0, D3D11)";
+        return getParameterProto.call(this, parameter);
+      };
+      if (typeof WebGL2RenderingContext !== "undefined") {
+        const getParameter2Proto = WebGL2RenderingContext.prototype.getParameter;
+        WebGL2RenderingContext.prototype.getParameter = function (parameter) {
+          if (parameter === 37445) return "Google Inc. (NVIDIA)";
+          if (parameter === 37446) return "ANGLE (NVIDIA, NVIDIA GeForce RTX 3060 Direct3D11 vs_5_0 ps_5_0, D3D11)";
+          return getParameter2Proto.call(this, parameter);
+        };
+      }
+    } catch (_) {}
+  });
+}
+
+async function resolveCloudflareTurnstile(page, onStatus = () => {}, maxWaitMs = 25000) {
+  const isChallenge = async () => {
+    return await page.evaluate(() => {
+      const title = (document.title || "").toLowerCase();
+      const body = (document.body ? document.body.innerText.slice(0, 1500) : "").toLowerCase();
+      return (
+        title.includes("just a moment") ||
+        title.includes("security verification") ||
+        body.includes("performing security verification") ||
+        body.includes("verify you are human") ||
+        body.includes("cloudflare")
+      );
+    }).catch(() => false);
+  };
+
+  const initialCheck = await isChallenge();
+  if (!initialCheck) return true;
+
+  onStatus("Cloudflare security verification detected. Attempting automated resolution in background...");
+  const start = Date.now();
+  let attempt = 0;
+
+  while (Date.now() - start < maxWaitMs) {
+    if (!(await isChallenge())) {
+      onStatus("Cloudflare verification passed.");
+      return true;
+    }
+
+    attempt++;
+    for (const frame of page.frames()) {
+      if (frame.url().includes("challenges.cloudflare.com")) {
+        try {
+          const selectors = [
+            "input[type='checkbox']",
+            ".ctp-checkbox-label",
+            "#challenge-stage",
+            ".mark",
+            "div.checkbox-container",
+            "label",
+          ];
+          for (const sel of selectors) {
+            const el = await frame.$(sel);
+            if (el) {
+              const box = await el.boundingBox();
+              if (box) {
+                await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2, { steps: 5 });
+                await page.waitForTimeout(60);
+                await page.mouse.down();
+                await page.waitForTimeout(80);
+                await page.mouse.up();
+                break;
+              } else {
+                await el.click().catch(() => {});
+                break;
+              }
+            }
+          }
+        } catch (_) {}
+      }
+    }
+
+    await page.waitForTimeout(1000);
+  }
+
+  return !(await isChallenge());
+}
+
 async function scrapeFragrantica(targetUrl, options = {}) {
   if (!isFragranticaUrl(targetUrl)) throw new Error("Enter a Fragrantica perfume URL, such as https://www.fragrantica.com/perfume/Prada/Prada-Paradoxe-Intense-83988.html.");
   const {
@@ -260,17 +397,22 @@ async function scrapeFragrantica(targetUrl, options = {}) {
         storageState = saved;
       } catch (_) { onStatus("Saved browser session could not be read; starting a new session"); }
     }
-    const userAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36";
+    const userAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36";
     const page = await browser.newPage({ viewport: { width: 1440, height: 1000 }, locale: "en-US", storageState, userAgent });
-    await page.addInitScript(() => {
-      try { Object.defineProperty(navigator, "webdriver", { get: () => undefined }); } catch (_) {}
-    });
+    await applyStealth(page);
     const response = await page.goto(targetUrl, { waitUntil: "domcontentloaded", timeout: 60000 });
     if ([404, 429].includes(response?.status())) {
       throw new Error(response.status() === 429
         ? "Fragrantica is limiting requests. Try again later. Saved results were not changed."
         : "This Fragrantica perfume page was not found. Saved results were not changed.");
     }
+
+    // Proactively resolve Cloudflare verification if triggered
+    const challengeMaxWait = Math.min(timeout, 25000);
+    if (challengeMaxWait > 500) {
+      await resolveCloudflareTurnstile(page, onStatus, challengeMaxWait);
+    }
+
     try {
       await page.waitForFunction(`(() => {
         const product = (${extractFragranticaProduct.toString()})();
