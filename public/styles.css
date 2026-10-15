@@ -3691,3 +3691,37 @@ body.mode-frontend .product-tag-badge {
   font-size: 11px;
   color: #d4a359;
 }
+
+
+.product-actions .tag-product-btn {
+  background: rgba(212, 163, 89, 0.15);
+  color: #b8860b;
+  border-color: rgba(212, 163, 89, 0.45);
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.product-actions .tag-product-btn:hover {
+  background: rgba(212, 163, 89, 0.28);
+  color: #7d5a00;
+  border-color: #b8860b;
+}
+
+.product-tags-group {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  align-items: center;
+}
+
+.product-tags-group .product-tag-badge {
+  font-size: 11px;
+  padding: 2px 7px;
+}
+
+.fragrance-table .action-column {
+  min-width: 170px;
+}

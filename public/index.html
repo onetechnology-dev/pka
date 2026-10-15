@@ -697,6 +697,56 @@
       </form>
     </dialog>
 
+    <!-- Product Tag Management Modal (Quick Tag Assignment for a Product on Backend) -->
+    <dialog id="productTagModal" class="tag-editor-modal" aria-labelledby="productTagModalTitle">
+      <form id="productTagForm" class="tag-editor-form">
+        <div class="tag-editor-header">
+          <div>
+            <span class="tag-dialog-badge">🏷️ Manage Product Tags</span>
+            <h3 id="productTagModalTitle">Tag Perfume</h3>
+          </div>
+          <button id="closeProductTagModalBtn" class="close-icon-btn" type="button" aria-label="Close tag modal">✕</button>
+        </div>
+
+        <input type="hidden" id="productTagTargetId" name="productId" value="" />
+
+        <div class="tag-field-group">
+          <label class="setting-label">
+            <span>Select Tags for this Perfume</span>
+            <small>Check or uncheck tags to assign or remove</small>
+          </label>
+          <div class="tag-product-checklist" id="productTagChecklist">
+            <!-- Populated dynamically with checkboxes -->
+          </div>
+        </div>
+
+        <div class="tag-field-group">
+          <label for="newProductTagNameInput" class="setting-label">
+            <span>Or Add a New Tag</span>
+            <small>Type a new tag name to create and assign to this perfume</small>
+          </label>
+          <div style="display: flex; gap: 8px;">
+            <input
+              id="newProductTagNameInput"
+              type="text"
+              placeholder="e.g. ផ្អែមស្រទន់, Luxury, Summer"
+              class="setting-control"
+            />
+            <button type="button" id="addNewTagToProductBtn" class="secondary-button" style="white-space: nowrap;">
+              ➕ Add
+            </button>
+          </div>
+        </div>
+
+        <p id="productTagError" class="editor-error" role="alert" hidden></p>
+
+        <div class="editor-actions">
+          <button id="cancelProductTagBtn" class="secondary-button" type="button">Cancel</button>
+          <button id="saveProductTagBtn" class="primary-button" type="submit">Save Tags</button>
+        </div>
+      </form>
+    </dialog>
+
     <!-- Floating Controls: Multi-Select Copy Image & Telegram Contact (Frontend - Frozen Bottom Right) -->
     <aside id="telegramFloatingWidget" class="telegram-floating-widget" aria-label="Floating Controls">
       <!-- Floating Multi-Select Copy Image Bar (Frozen at Bottom Right) -->

@@ -261,3 +261,37 @@ test("search matching includes tags", () => {
   assert.equal(matchesFilter(productWithTag, "Summer"), true);
   assert.equal(matchesFilter(productWithoutTag, "Leather"), true);
 });
+
+
+test("backend product list includes tag button and tags before edit button", () => {
+  const appJs = fs.readFileSync(path.join(__dirname, "../public/app.js"), "utf8");
+
+  // Check renderActions contains tag button before edit button
+  const tagBtnIndex = appJs.indexOf('data-action="tag"');
+  const editBtnIndex = appJs.indexOf('data-action="edit"');
+  assert.ok(tagBtnIndex > 0, "app.js should contain data-action=\"tag\"");
+  assert.ok(editBtnIndex > 0, "app.js should contain data-action=\"edit\"");
+  assert.ok(tagBtnIndex < editBtnIndex, "tag button should appear before edit button in renderActions");
+
+  // Check renderActions contains product-tags-group before edit button
+  const tagsGroupIndex = appJs.indexOf("product-tags-group");
+  assert.ok(tagsGroupIndex > 0, "app.js should contain product-tags-group");
+  assert.ok(tagsGroupIndex < editBtnIndex, "product-tags-group should appear before edit button");
+
+  // Check click delegation handles data-action="tag"
+  assert.match(appJs, /button\.dataset\.action === "tag"/);
+  assert.match(appJs, /openProductTagModal/);
+
+  // Check index.html has productTagModal with required elements
+  const html = fs.readFileSync(path.join(__dirname, "../public/index.html"), "utf8");
+  assert.match(html, /id="productTagModal"/);
+  assert.match(html, /id="productTagForm"/);
+  assert.match(html, /id="productTagChecklist"/);
+  assert.match(html, /id="newProductTagNameInput"/);
+  assert.match(html, /id="addNewTagToProductBtn"/);
+
+  // Check styles.css has tag-product-btn styling
+  const css = fs.readFileSync(path.join(__dirname, "../public/styles.css"), "utf8");
+  assert.match(css, /\.tag-product-btn/);
+  assert.match(css, /\.product-tags-group/);
+});

@@ -354,7 +354,14 @@ function renderProductStatus(product) {
 }
 
 function renderActions(product) {
+  const tags = Array.isArray(product.tags) && product.tags.length ? product.tags : [];
+  const tagsHtml = tags
+    .map((t) => `<span class="product-tag-badge" title="Tag: ${escapeHtml(t)}">${escapeHtml(t)}</span>`)
+    .join("");
+
   return `<div class="product-actions">
+    ${tagsHtml ? `<span class="product-tags-group">${tagsHtml}</span>` : ""}
+    <button type="button" class="tag-product-btn" data-action="tag" data-id="${escapeHtml(product.id)}" ${product.id ? "" : "disabled"} title="Manage tags for this perfume">🏷️ Tag</button>
     <button type="button" data-action="edit" data-id="${escapeHtml(product.id)}" ${product.id ? "" : "disabled"}>Edit</button>
     <button type="button" class="delete-product" data-action="delete" data-id="${escapeHtml(product.id)}" ${product.id ? "" : "disabled"}>Delete</button>
   </div>`;
@@ -1003,6 +1010,7 @@ document.querySelector(".results-section").addEventListener("click", async (even
   const product = products.find((item) => item.id === button.dataset.id);
   if (!product) return;
   if (button.dataset.action === "edit") { openEditor(product); return; }
+  if (button.dataset.action === "tag") { openProductTagModal(product); return; }
   if (!window.confirm(`Delete "${product.name}" from your saved products?`)) return;
   button.disabled = true;
   try {
@@ -2752,6 +2760,126 @@ tagEditorForm?.addEventListener("submit", async (event) => {
     }
   } finally {
     if (saveTagBtn) saveTagBtn.disabled = false;
+  }
+});
+
+/* ==========================================================================
+   Product-Level Quick Tag Assignment Modal
+   ========================================================================== */
+const productTagModal = document.querySelector("#productTagModal");
+const productTagForm = document.querySelector("#productTagForm");
+const productTagModalTitle = document.querySelector("#productTagModalTitle");
+const closeProductTagModalBtn = document.querySelector("#closeProductTagModalBtn");
+const cancelProductTagBtn = document.querySelector("#cancelProductTagBtn");
+const productTagTargetId = document.querySelector("#productTagTargetId");
+const productTagChecklist = document.querySelector("#productTagChecklist");
+const newProductTagNameInput = document.querySelector("#newProductTagNameInput");
+const addNewTagToProductBtn = document.querySelector("#addNewTagToProductBtn");
+const productTagError = document.querySelector("#productTagError");
+const saveProductTagBtn = document.querySelector("#saveProductTagBtn");
+
+let currentTaggingProduct = null;
+
+function openProductTagModal(product) {
+  if (!productTagModal) return;
+  currentTaggingProduct = product;
+  if (productTagError) productTagError.hidden = true;
+  if (newProductTagNameInput) newProductTagNameInput.value = "";
+  if (productTagTargetId) productTagTargetId.value = product.id;
+  if (productTagModalTitle) {
+    productTagModalTitle.textContent = `${product.name} ${product.brand ? `(${product.brand})` : ""}`;
+  }
+
+  // Collect all known tags in system
+  const allTagNames = new Set(["ក្លិនពេញនិយម"]);
+  for (const t of currentTags) {
+    if (t.name) allTagNames.add(t.name);
+  }
+  for (const p of products) {
+    if (Array.isArray(p.tags)) {
+      for (const t of p.tags) if (t) allTagNames.add(t);
+    }
+  }
+
+  const productTagsSet = new Set(Array.isArray(product.tags) ? product.tags : []);
+
+  renderProductTagChecklist(allTagNames, productTagsSet);
+  productTagModal.showModal();
+}
+
+function renderProductTagChecklist(allTagNames, selectedTagNames) {
+  if (!productTagChecklist) return;
+  productTagChecklist.innerHTML = Array.from(allTagNames)
+    .map((tagName) => {
+      const isChecked = selectedTagNames.has(tagName);
+      return `
+        <label class="checklist-item">
+          <input type="checkbox" value="${escapeHtml(tagName)}" class="product-tag-checkbox" ${isChecked ? "checked" : ""} />
+          <span class="tag-pill">🏷️ ${escapeHtml(tagName)}</span>
+        </label>
+      `;
+    })
+    .join("");
+}
+
+addNewTagToProductBtn?.addEventListener("click", () => {
+  const newTag = (newProductTagNameInput?.value || "").trim();
+  if (!newTag) return;
+  if (!productTagChecklist) return;
+
+  const existing = Array.from(productTagChecklist.querySelectorAll(".product-tag-checkbox")).find(
+    (cb) => cb.value.toLowerCase() === newTag.toLowerCase()
+  );
+  if (existing) {
+    existing.checked = true;
+  } else {
+    const itemHtml = `
+      <label class="checklist-item">
+        <input type="checkbox" value="${escapeHtml(newTag)}" class="product-tag-checkbox" checked />
+        <span class="tag-pill">🏷️ ${escapeHtml(newTag)}</span>
+      </label>
+    `;
+    productTagChecklist.insertAdjacentHTML("beforeend", itemHtml);
+  }
+  newProductTagNameInput.value = "";
+});
+
+closeProductTagModalBtn?.addEventListener("click", () => productTagModal?.close());
+cancelProductTagBtn?.addEventListener("click", () => productTagModal?.close());
+
+productTagForm?.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  if (!currentTaggingProduct) return;
+  if (saveProductTagBtn) saveProductTagBtn.disabled = true;
+  if (productTagError) productTagError.hidden = true;
+
+  try {
+    const checkedCheckboxes = productTagChecklist?.querySelectorAll(".product-tag-checkbox:checked") || [];
+    const selectedTags = Array.from(checkedCheckboxes).map((cb) => cb.value.trim()).filter(Boolean);
+
+    const response = await fetch(`/api/products/${currentTaggingProduct.id}`, {
+      method: "PATCH",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        tags: selectedTags,
+        version: currentTaggingProduct.version,
+      }),
+    });
+    const payload = await response.json();
+    if (!response.ok) throw new Error(payload.error || "Could not update product tags.");
+
+    if (payload.source === sourceInput?.value) {
+      setProducts(payload.products, `Tags updated for "${currentTaggingProduct.name}"`);
+    }
+    loadTags();
+    productTagModal?.close();
+  } catch (err) {
+    if (productTagError) {
+      productTagError.textContent = err.message || "Failed to update tags.";
+      productTagError.hidden = false;
+    }
+  } finally {
+    if (saveProductTagBtn) saveProductTagBtn.disabled = false;
   }
 });
 
