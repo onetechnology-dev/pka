@@ -35,6 +35,18 @@ const adminControlPanel = document.querySelector("#adminControlPanel");
 const adminSummaryGrid = document.querySelector("#adminSummaryGrid");
 const topbarEyebrow = document.querySelector("#topbarEyebrow");
 const toolbarHeading = document.querySelector("#toolbarHeading");
+const sidebarToggleBtn = document.querySelector("#sidebarToggleBtn");
+const sidebarCloseBtn = document.querySelector("#sidebarCloseBtn");
+const sidebarBackdrop = document.querySelector("#sidebarBackdrop");
+const adminSidebar = document.querySelector("#adminSidebar");
+
+function toggleSidebar() {
+  document.body.classList.toggle("sidebar-open");
+}
+
+function closeSidebar() {
+  document.body.classList.remove("sidebar-open");
+}
 
 const openSettingsBtn = document.querySelector("#openSettingsBtn");
 const adminSettingsBtn = document.querySelector("#adminSettingsBtn");
@@ -169,6 +181,7 @@ function getProductGender(name) {
 function setAppMode(mode) {
   currentMode = mode;
   try { localStorage.setItem("pka_app_mode", mode); } catch (_) {}
+  closeSidebar();
 
   const isFrontend = mode === "frontend";
   document.body.classList.toggle("mode-frontend", isFrontend);
@@ -226,11 +239,13 @@ function updateSourceView() {
 
 function updateResultsView() {
   const catalogue = isFragrantica() && resultsView === "catalogue";
-  viewControls.hidden = !isFragrantica();
+  if (viewControls) viewControls.hidden = !isFragrantica();
   productGallery.hidden = !catalogue;
   tablePanel.hidden = catalogue;
-  catalogueView.setAttribute("aria-pressed", String(catalogue));
-  tableView.setAttribute("aria-pressed", String(!catalogue));
+  catalogueView?.setAttribute("aria-pressed", String(catalogue));
+  catalogueView?.classList.toggle("active", catalogue);
+  tableView?.setAttribute("aria-pressed", String(!catalogue));
+  tableView?.classList.toggle("active", !catalogue);
 }
 
 function setStatus(message, state = "ready") {
@@ -1690,9 +1705,18 @@ resultsHead?.addEventListener("click", (e) => {
 });
 copyJson?.addEventListener("click", copyProductsJson);
 downloadJson?.addEventListener("click", downloadProductsJson);
-catalogueView.addEventListener("click", () => { resultsView = "catalogue"; updateResultsView(); });
-tableView.addEventListener("click", () => { resultsView = "table"; updateResultsView(); });
+catalogueView?.addEventListener("click", () => {
+  resultsView = "catalogue";
+  updateResultsView();
+  closeSidebar();
+});
+tableView?.addEventListener("click", () => {
+  resultsView = "table";
+  updateResultsView();
+  closeSidebar();
+});
 viewFrontendBtn?.addEventListener("click", () => {
+  closeSidebar();
   if (window.location.pathname.startsWith("/admin")) {
     window.location.href = "/";
   } else {
@@ -1700,13 +1724,27 @@ viewFrontendBtn?.addEventListener("click", () => {
   }
 });
 viewBackendBtn?.addEventListener("click", () => {
+  closeSidebar();
   if (!window.location.pathname.startsWith("/admin")) {
     window.location.href = "/admin";
   } else {
     setAppMode("backend");
   }
 });
-addProductBtn?.addEventListener("click", openAddProduct);
+addProductBtn?.addEventListener("click", () => {
+  closeSidebar();
+  openAddProduct();
+});
+
+sidebarToggleBtn?.addEventListener("click", toggleSidebar);
+sidebarCloseBtn?.addEventListener("click", closeSidebar);
+sidebarBackdrop?.addEventListener("click", closeSidebar);
+
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && document.body.classList.contains("sidebar-open")) {
+    closeSidebar();
+  }
+});
 
 window.addEventListener("hashchange", () => {
   if (window.location.hash === "#frontend" || window.location.hash === "#storefront") {
@@ -1899,8 +1937,14 @@ function closeSettingsModal() {
   if (settingsDialog && settingsDialog.open) settingsDialog.close();
 }
 
-openSettingsBtn?.addEventListener("click", openSettingsModal);
-adminSettingsBtn?.addEventListener("click", openSettingsModal);
+openSettingsBtn?.addEventListener("click", () => {
+  closeSidebar();
+  openSettingsModal();
+});
+adminSettingsBtn?.addEventListener("click", () => {
+  closeSidebar();
+  openSettingsModal();
+});
 closeSettingsBtn?.addEventListener("click", closeSettingsModal);
 cancelSettingsBtn?.addEventListener("click", closeSettingsModal);
 
@@ -2430,6 +2474,7 @@ adminModuleLoginForm?.addEventListener("submit", async (e) => {
 });
 
 logoutBtn?.addEventListener("click", async () => {
+  closeSidebar();
   sessionStorage.removeItem("pka_admin_auth");
   setAdminLockedState(true);
   setStatus("Signed out of admin portal", "ready");

@@ -7,9 +7,79 @@
     <link rel="stylesheet" href="/styles.css" />
   </head>
   <body>
+    <!-- Responsive Left Navigation Drawer Backdrop -->
+    <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+    <!-- Admin Left Navigation Sidebar -->
+    <aside class="admin-sidebar" id="adminSidebar" aria-label="Admin Navigation">
+      <div class="sidebar-header">
+        <div class="sidebar-brand">
+          <span class="sidebar-crest" aria-hidden="true">⚜️</span>
+          <div class="sidebar-brand-text">
+            <span class="sidebar-title">PKA SCENT</span>
+            <span class="sidebar-subtitle">Haute Parfumerie Admin</span>
+          </div>
+        </div>
+        <button id="sidebarCloseBtn" class="sidebar-close-btn" type="button" aria-label="Close navigation menu">✕</button>
+      </div>
+
+      <div class="sidebar-content">
+        <div class="sidebar-section">
+          <span class="sidebar-section-title">Views</span>
+          <div id="viewControls" class="sidebar-view-controls" role="group" aria-label="Results view">
+            <button id="catalogueView" class="sidebar-nav-btn active" type="button" aria-pressed="true">
+              <span class="nav-icon">🎴</span>
+              <span class="nav-label">Product View</span>
+            </button>
+            <button id="tableView" class="sidebar-nav-btn" type="button" aria-pressed="false">
+              <span class="nav-icon">📋</span>
+              <span class="nav-label">Table</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="sidebar-section">
+          <span class="sidebar-section-title">Catalog Actions</span>
+          <button id="addProductBtn" class="sidebar-nav-btn primary-nav-btn" type="button">
+            <span class="nav-icon">➕</span>
+            <span class="nav-label">Add Product</span>
+          </button>
+        </div>
+
+        <div class="sidebar-section">
+          <span class="sidebar-section-title">System &amp; Portal</span>
+          <button id="viewFrontendBtn" class="sidebar-nav-btn" type="button">
+            <span class="nav-icon">🛍️</span>
+            <span class="nav-label" id="viewFrontendText">Frontend (PKA SCENT)</span>
+          </button>
+          <button id="adminSettingsBtn" class="sidebar-nav-btn" type="button" title="Site Settings">
+            <span class="nav-icon">⚙️</span>
+            <span class="nav-label">Settings</span>
+          </button>
+          <button id="logoutBtn" class="sidebar-nav-btn logout-nav-btn" type="button" title="Sign Out of Admin">
+            <span class="nav-icon">🚪</span>
+            <span class="nav-label">Sign Out</span>
+          </button>
+          <button id="viewBackendBtn" class="mode-nav-btn" type="button" role="tab" aria-selected="false" style="display: none;"></button>
+        </div>
+      </div>
+
+      <div class="sidebar-footer">
+        <div class="sidebar-status-wrap">
+          <span class="status-indicator-dot"></span>
+          <span class="sidebar-status-text">System Active</span>
+        </div>
+      </div>
+    </aside>
+
     <main class="app-shell">
       <header class="topbar brand-topbar">
         <div class="brand-header-left">
+          <button id="sidebarToggleBtn" class="sidebar-toggle-btn" type="button" aria-label="Toggle navigation menu" title="Menu">
+            <span class="hamburger-bar"></span>
+            <span class="hamburger-bar"></span>
+            <span class="hamburger-bar"></span>
+          </button>
           <div class="brand-crest" id="brandCrest" aria-hidden="true">
             <span class="crest-symbol" id="crestSymbol">⚜️</span>
           </div>
@@ -20,21 +90,10 @@
         </div>
 
         <div class="topbar-controls">
-          <nav class="mode-navigation" role="tablist" aria-label="Portal View Navigation">
-            <button id="viewFrontendBtn" class="mode-nav-btn active" type="button" role="tab" aria-selected="true">
-              <span class="tab-icon">🛍️</span> <span id="viewFrontendText">Frontend (PKA SCENT)</span>
-            </button>
-            <button id="viewBackendBtn" class="mode-nav-btn" type="button" role="tab" aria-selected="false">
-              <span class="tab-icon">⚙️</span> Backend (Admin)
-            </button>
-          </nav>
           <button id="openSettingsBtn" class="settings-trigger-btn" type="button" aria-haspopup="dialog" title="Site &amp; Brand Settings">
             <span class="btn-icon">⚙️</span> Settings
           </button>
-          <button id="logoutBtn" class="settings-trigger-btn logout-trigger-btn" type="button" title="Sign Out of Admin">
-            🚪 Logout
-          </button>
-          <div class="status-pill" id="runState">Ready</div>
+          <div class="status-pill" id="runState" style="display: none;">Ready</div>
         </div>
       </header>
 
@@ -106,14 +165,6 @@
       <section class="control-panel admin-only-section" id="adminControlPanel" aria-label="Scraper controls">
         <div class="admin-panel-header">
           <span class="admin-badge">Admin Controls</span>
-          <div class="admin-panel-actions">
-            <button id="adminSettingsBtn" class="secondary-button admin-settings-btn" type="button" title="Site Settings">
-              ⚙️ Settings
-            </button>
-            <button id="addProductBtn" class="primary-button add-product-btn" type="button">
-              + Add product
-            </button>
-          </div>
         </div>
         <form id="scrapeForm" class="scrape-form">
           <label class="url-field source-field" style="display: none;">
@@ -177,12 +228,8 @@
       <!-- Results & Products Section -->
       <section class="results-section" aria-label="Scrape results">
         <div class="table-toolbar">
-          <div class="toolbar-title-group">
+          <div class="toolbar-title-group" style="display: none;">
             <h2 id="toolbarHeading">Fragrance Catalogue</h2>
-            <div id="viewControls" class="view-switch" role="group" aria-label="Results view" hidden>
-              <button id="catalogueView" type="button" aria-pressed="true">Product view</button>
-              <button id="tableView" type="button" aria-pressed="false">Table</button>
-            </div>
           </div>
 
           <div class="filters-container">

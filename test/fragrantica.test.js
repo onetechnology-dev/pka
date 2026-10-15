@@ -600,7 +600,7 @@ test("renders PKA SCENT header and separates Frontend storefront and Backend adm
     await page.goto(adminUrl);
     assert.equal(await page.locator("#storefrontHero").isVisible(), false);
     assert.equal(await page.locator("#adminControlPanel").isVisible(), true);
-    assert.equal(await page.locator("#adminSummaryGrid").isVisible(), true);
+    assert.equal(await page.locator("#adminSummaryGrid").isVisible(), false);
     assert.equal(await page.locator(".topbar-controls").isVisible(), true);
 
     // Add Product from Admin

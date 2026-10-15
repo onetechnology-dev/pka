@@ -79,3 +79,14 @@ token to access the HTTP API: 8670278807:AAGODQKhNr4vdnWnI47AEEzNftRAqzkMGO0
 -Update add count item after each filter name, example (MEN(XX), WOMEN(XX), UNISEX(XX)
 -Update feature copy as image on multiple select as seperate each image per panel
 -Update feature copy as image multiple select into one clipboard as seperate each image per panel without module popup as attach file.
+-Update feature copy as image by multiple selected copy and past into clipboard as seperate each image per panel make sure it is not merge to one file and past to one clipboard with multiple image like this attach file.
+-Update add new feature Add Tag for product list​ on backend after add scrapper or add new product as below:
+-Create module popup with input multiple select and Set default tag "ក្លិនពេញនិយម"​.
+-Include tag on feature search.
+-Show only tag "ក្លិនពេញនិយម" on frontend before short brand and set order short by this tag.
+
+-Update ux/ui backend as below:
+-Disappear panel (Products,With brand, With photo, Status) and Fragrance Inventory (prduct view, Table).
+-Update create nav left side menu and move all button to nav menu for responsive ux/ui mobile and keep only one button settins on backend.
+
+-
