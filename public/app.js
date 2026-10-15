@@ -395,8 +395,8 @@ function renderActions(product) {
   return `<div class="product-actions">
     ${tagsHtml ? `<span class="product-tags-group">${tagsHtml}</span>` : ""}
     <button type="button" class="tag-product-btn" data-action="tag" data-id="${escapeHtml(product.id)}" ${product.id ? "" : "disabled"} title="Manage tags for this perfume">🏷️ Tag</button>
-    <button type="button" class="action-icon-btn edit-product-btn" data-action="edit" data-id="${escapeHtml(product.id)}" ${product.id ? "" : "disabled"} title="Edit" aria-label="Edit">✏️</button>
-    <button type="button" class="action-icon-btn delete-product delete-product-btn" data-action="delete" data-id="${escapeHtml(product.id)}" ${product.id ? "" : "disabled"} title="Delete" aria-label="Delete">🗑️</button>
+    <button type="button" class="edit-product-btn" data-action="edit" data-id="${escapeHtml(product.id)}" ${product.id ? "" : "disabled"} title="Edit perfume">Edit</button>
+    <button type="button" class="delete-product-btn delete-product" data-action="delete" data-id="${escapeHtml(product.id)}" ${product.id ? "" : "disabled"} title="Delete perfume">Delete</button>
   </div>`;
 }
 

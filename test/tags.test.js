@@ -299,12 +299,19 @@ test("backend product list includes tag button and tags before edit button", () 
   assert.match(css, /\.product-tags-group/);
 });
 
-test("product list backend Edit and Delete buttons use icons", () => {
+test("product list backend Edit and Delete buttons use text and modern single row layout", () => {
   const appJs = fs.readFileSync(path.join(__dirname, "../public/app.js"), "utf8");
-  // Edit button uses ✏️ icon
-  assert.match(appJs, /<button[^>]*data-action="edit"[^>]*>✏️<\/button>/);
-  // Delete button uses 🗑️ icon
-  assert.match(appJs, /<button[^>]*data-action="delete"[^>]*>🗑️<\/button>/);
+  // Edit button uses text Edit
+  assert.match(appJs, /<button[^>]*data-action="edit"[^>]*>Edit<\/button>/);
+  // Delete button uses text Delete
+  assert.match(appJs, /<button[^>]*data-action="delete"[^>]*>Delete<\/button>/);
+
+  const css = fs.readFileSync(path.join(__dirname, "../public/styles.css"), "utf8");
+  // Single row layout for backend product-actions
+  assert.match(css, /\.product-actions\s*\{[^}]*flex-wrap:\s*nowrap/);
+  assert.match(css, /\.product-actions\s*\{[^}]*white-space:\s*nowrap/);
+  assert.match(css, /\.edit-product-btn/);
+  assert.match(css, /\.delete-product-btn/);
 });
 
 test("store.saveTag supports filter boolean and listTags returns it", async () => {

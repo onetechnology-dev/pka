@@ -46,9 +46,9 @@ button:disabled {
 }
 
 .app-shell {
-  width: min(1180px, calc(100vw - 32px));
+  width: min(1180px, calc(100vw));
   margin: 0 auto;
-  padding: 0 0 40px;
+  padding: 0 0 20px;
 }
 
 .topbar {
@@ -66,8 +66,8 @@ button:disabled {
   min-height: 76px;
   border-bottom: 1px solid rgba(212, 175, 55, 0.35);
   padding: 14px 20px;
-  border-radius: 12px;
-  margin: 10px 0 24px;
+  /* border-radius: 12px; */
+  margin: 0px 0px;
 }
 
 .brand-header-left {
@@ -193,9 +193,9 @@ h2 {
 
 .storefront-hero {
   position: relative;
-  margin: 20px 0 22px;
+  /* margin: 20px 0 22px; */
   padding: 34px 34px;
-  border-radius: 12px;
+  /* border-radius: 12px; */
   background-color: #170410;
   background-image:
     linear-gradient(
@@ -329,7 +329,7 @@ h2 {
 .table-toolbar input {
   width: 100%;
   box-sizing: border-box;
-  min-height: 42px;
+  min-height: 28px;
   border: 1px solid var(--border);
   border-radius: 8px;
   background: var(--panel);
@@ -349,14 +349,81 @@ h2 {
 .url-field small { color: var(--muted); font-size: 11px; }
 .product-status { display: inline-block; border-radius: 999px; padding: 5px 10px; font-size: 12px; font-weight: 700; }
 .product-status.active { color: #11634d; background: #e2f3eb; }
-.product-actions { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
-.product-actions button { padding: 6px 9px; border: 1px solid var(--border); background: white; border-radius: 5px; color: #354458; cursor: pointer; transition: all 0.15s ease; }
-.product-actions .action-icon-btn { font-size: 14px; line-height: 1; min-width: 32px; min-height: 30px; display: inline-flex; align-items: center; justify-content: center; }
-.product-actions .action-icon-btn:hover { transform: translateY(-1px); }
-.product-actions .delete-product { color: #a52343; }
-.product-actions .delete-product:hover { background: #fee2e2; border-color: #ef4444; }
+.product-actions {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  gap: 6px;
+  align-items: center;
+  white-space: nowrap;
+}
+.product-actions button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.25;
+  border-radius: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  border: 1px solid transparent;
+  transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+.product-actions button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.08);
+}
+.product-actions button:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: none;
+}
+.product-actions button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+.product-actions .tag-product-btn {
+  background: rgba(212, 163, 89, 0.12);
+  color: #b8860b;
+  border-color: rgba(212, 163, 89, 0.38);
+}
+.product-actions .tag-product-btn:hover:not(:disabled) {
+  background: rgba(212, 163, 89, 0.24);
+  color: #8c6504;
+  border-color: rgba(212, 163, 89, 0.65);
+}
+.product-actions .edit-product-btn {
+  background: rgba(59, 130, 246, 0.10);
+  color: #2563eb;
+  border-color: rgba(59, 130, 246, 0.32);
+}
+.product-actions .edit-product-btn:hover:not(:disabled) {
+  background: rgba(59, 130, 246, 0.20);
+  color: #1d4ed8;
+  border-color: rgba(59, 130, 246, 0.58);
+}
+.product-actions .delete-product,
+.product-actions .delete-product-btn {
+  background: rgba(239, 68, 68, 0.10);
+  color: #dc2626;
+  border-color: rgba(239, 68, 68, 0.30);
+}
+.product-actions .delete-product:hover:not(:disabled),
+.product-actions .delete-product-btn:hover:not(:disabled) {
+  background: rgba(239, 68, 68, 0.20);
+  color: #b91c1c;
+  border-color: rgba(239, 68, 68, 0.55);
+}
 .fragrance-table .status-column { width: 100px; }
-.fragrance-table .action-column { width: 150px; }
+.fragrance-table .action-column,
+.action-column { width: 280px; min-width: 280px; white-space: nowrap; }
+.fragrance-table td:last-child { white-space: nowrap; vertical-align: middle; }
 dialog { width: min(760px, calc(100vw - 24px)); max-height: 90vh; overflow: auto; padding: 24px; border: 1px solid var(--border); border-radius: 12px; color: var(--ink); }
 dialog::backdrop { background: #17101b88; }
 .editor-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 22px 0; }
@@ -710,7 +777,7 @@ dialog::backdrop { background: #17101b88; }
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: 1px;
   width: 100%;
 }
 
@@ -1369,8 +1436,8 @@ td {
 
 @media (max-width: 560px) {
   .app-shell {
-    width: min(100vw - 20px, 1180px);
-    padding-top: 16px;
+    width: min(100vw, 1180px);
+    padding-top: 0px;
   }
 
   .topbar {
@@ -3774,37 +3841,32 @@ body.mode-frontend .product-tag-badge {
 }
 
 
-.product-actions .tag-product-btn {
-  background: rgba(212, 163, 89, 0.15);
-  color: #b8860b;
-  border-color: rgba(212, 163, 89, 0.45);
-  font-weight: 600;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.product-actions .tag-product-btn:hover {
-  background: rgba(212, 163, 89, 0.28);
-  color: #7d5a00;
-  border-color: #b8860b;
-}
-
 .product-tags-group {
   display: inline-flex;
-  flex-wrap: wrap;
+  flex-direction: row;
+  flex-wrap: nowrap;
   gap: 4px;
   align-items: center;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .product-tags-group .product-tag-badge {
   font-size: 11px;
-  padding: 2px 7px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: rgba(212, 163, 89, 0.16);
+  color: #8c6504;
+  border: 1px solid rgba(212, 163, 89, 0.4);
+  font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .fragrance-table .action-column {
-  min-width: 170px;
+  width: 280px;
+  min-width: 280px;
+  white-space: nowrap;
 }
 
 /* Website Bio and Header Bio Styles */
