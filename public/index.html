@@ -4,6 +4,9 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>PKA SCENT | Luxury Fragrance Scraper &amp; Collection</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:ital,wght@0,100..700;1,100..700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="/styles.css" />
   </head>
   <body>
@@ -43,6 +46,10 @@
           <button id="addProductBtn" class="sidebar-nav-btn primary-nav-btn" type="button">
             <span class="nav-icon">➕</span>
             <span class="nav-label">Add Product</span>
+          </button>
+          <button id="tagSettingsBtn" class="sidebar-nav-btn" type="button">
+            <span class="nav-icon">🏷️</span>
+            <span class="nav-label">Tag Settings</span>
           </button>
         </div>
 
@@ -587,6 +594,105 @@
             <button id="cancelSettingsBtn" class="secondary-button" type="button">Cancel</button>
             <button id="saveSettingsBtn" class="primary-button" type="submit">Save settings</button>
           </div>
+        </div>
+      </form>
+    </dialog>
+
+    <!-- Tag Settings Manager Dialog (Tag List Table) -->
+    <dialog id="tagSettingsDialog" class="tag-settings-dialog" aria-labelledby="tagSettingsTitle">
+      <div class="tag-settings-card">
+        <div class="tag-dialog-header">
+          <div class="tag-header-left">
+            <span class="tag-dialog-badge">🏷️ Tag Management</span>
+            <h2 id="tagSettingsTitle">Tag Settings</h2>
+            <p class="tag-dialog-subtitle">Configure tags to organize and sort top product list in your luxury fragrance collection.</p>
+          </div>
+          <div class="tag-header-actions">
+            <button id="openAddTagBtn" class="primary-button add-tag-trigger-btn" type="button">
+              ➕ Add Tag
+            </button>
+            <button id="closeTagSettingsBtn" class="close-icon-btn" type="button" aria-label="Close tag settings">✕</button>
+          </div>
+        </div>
+
+        <div class="tag-table-wrap">
+          <table class="tag-management-table" id="tagManagementTable">
+            <tbody id="tagTableHeader">
+              <tr class="tag-table-header-row">
+                <th class="th-tag-name">Tag Name</th>
+                <th class="th-perfume-names">Perfume Names (Product Name)</th>
+                <th class="th-tag-actions">Action</th>
+              </tr>
+            </tbody>
+            <tbody id="tagTableBody">
+              <!-- Populated dynamically -->
+            </tbody>
+          </table>
+          <div id="tagEmptyState" class="tag-empty-state" hidden>No tags created yet. Click "+ Add Tag" to create one.</div>
+        </div>
+
+        <div class="editor-actions tag-dialog-footer">
+          <button id="dismissTagSettingsBtn" class="secondary-button" type="button">Close</button>
+        </div>
+      </div>
+    </dialog>
+
+    <!-- Tag Editor Module Popup with Input Multiple Select and Default Tag "ក្លិនពេញនិយម" -->
+    <dialog id="tagEditorModal" class="tag-editor-modal" aria-labelledby="tagEditorTitle">
+      <form id="tagEditorForm" class="tag-editor-form">
+        <div class="tag-editor-header">
+          <h3 id="tagEditorTitle">🏷️ Add New Tag</h3>
+          <button id="closeTagEditorBtn" class="close-icon-btn" type="button" aria-label="Close tag editor">✕</button>
+        </div>
+
+        <input type="hidden" id="tagEditId" name="tagId" value="" />
+
+        <div class="tag-field-group">
+          <label for="tagNameInput" class="setting-label">
+            <span>Tag Name</span>
+            <small>Tag label (Default: ក្លិនពេញនិយម)</small>
+          </label>
+          <input
+            id="tagNameInput"
+            name="tagName"
+            type="text"
+            required
+            value="ក្លិនពេញនិយម"
+            placeholder="ក្លិនពេញនិយម"
+            class="setting-control"
+          />
+        </div>
+
+        <div class="tag-field-group">
+          <div class="picker-header-row">
+            <label class="setting-label">
+              <span>Perfume Names (Product Name)</span>
+              <small>Select multiple perfumes to apply this tag</small>
+            </label>
+            <div class="picker-quick-actions">
+              <button type="button" id="tagSelectAllBtn" class="text-link-btn">Select All</button>
+              <span class="action-sep">•</span>
+              <button type="button" id="tagDeselectAllBtn" class="text-link-btn">Clear All</button>
+            </div>
+          </div>
+          <input
+            type="search"
+            id="tagPickerSearch"
+            class="tag-picker-search"
+            placeholder="Search perfumes..."
+            autocomplete="off"
+          />
+          <div class="tag-product-checklist" id="tagProductChecklist">
+            <!-- Populated dynamically -->
+          </div>
+          <select id="tagProductSelect" name="productIds" multiple class="sr-only" aria-hidden="true"></select>
+        </div>
+
+        <p id="tagEditorError" class="editor-error" role="alert" hidden></p>
+
+        <div class="editor-actions">
+          <button id="cancelTagEditorBtn" class="secondary-button" type="button">Cancel</button>
+          <button id="saveTagBtn" class="primary-button" type="submit">Save Tag</button>
         </div>
       </form>
     </dialog>

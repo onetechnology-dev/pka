@@ -247,6 +247,54 @@ const server = http.createServer(async (request, response) => {
     return;
   }
 
+  if (request.method === "GET" && requestUrl.pathname === "/api/tags") {
+    try {
+      const source = requestUrl.searchParams.get("source") || "fragrantica";
+      const tags = typeof store.listTags === "function" ? await store.listTags(source) : [];
+      sendJson(response, 200, { tags });
+    } catch (error) {
+      sendJson(response, 500, { error: error.message || "Could not load tags." });
+    }
+    return;
+  }
+
+  if (request.method === "POST" && requestUrl.pathname === "/api/tags") {
+    try {
+      const payload = await readRequestBody(request);
+      const source = payload.source || "fragrantica";
+      const tags = typeof store.saveTag === "function" ? await store.saveTag(source, payload) : [];
+      sendJson(response, 200, { success: true, tags, products: await store.list(source) });
+    } catch (error) {
+      sendJson(response, error.statusCode || 500, { error: error.message || "Could not save tag." });
+    }
+    return;
+  }
+
+  const tagDeleteMatch = requestUrl.pathname.match(/^\/api\/tags\/([a-zA-Z0-9_-]+)$/);
+  if (tagDeleteMatch && request.method === "DELETE") {
+    try {
+      const tagId = tagDeleteMatch[1];
+      const source = requestUrl.searchParams.get("source") || "fragrantica";
+      const tags = typeof store.deleteTag === "function" ? await store.deleteTag(source, tagId) : [];
+      sendJson(response, 200, { success: true, tags, products: await store.list(source) });
+    } catch (error) {
+      sendJson(response, error.statusCode || 500, { error: error.message || "Could not delete tag." });
+    }
+    return;
+  }
+
+  if (request.method === "POST" && requestUrl.pathname === "/api/tags/delete") {
+    try {
+      const payload = await readRequestBody(request);
+      const source = payload.source || "fragrantica";
+      const tags = typeof store.deleteTag === "function" ? await store.deleteTag(source, payload.id) : [];
+      sendJson(response, 200, { success: true, tags, products: await store.list(source) });
+    } catch (error) {
+      sendJson(response, error.statusCode || 500, { error: error.message || "Could not delete tag." });
+    }
+    return;
+  }
+
   if (request.method === "POST" && requestUrl.pathname === "/api/upload-logo") {
     try {
       const payload = await readRequestBody(request);

@@ -48,6 +48,28 @@ function closeSidebar() {
   document.body.classList.remove("sidebar-open");
 }
 
+const tagSettingsBtn = document.querySelector("#tagSettingsBtn");
+const tagSettingsDialog = document.querySelector("#tagSettingsDialog");
+const closeTagSettingsBtn = document.querySelector("#closeTagSettingsBtn");
+const dismissTagSettingsBtn = document.querySelector("#dismissTagSettingsBtn");
+const openAddTagBtn = document.querySelector("#openAddTagBtn");
+const tagTableBody = document.querySelector("#tagTableBody");
+const tagEmptyState = document.querySelector("#tagEmptyState");
+const tagEditorModal = document.querySelector("#tagEditorModal");
+const tagEditorForm = document.querySelector("#tagEditorForm");
+const tagEditorTitle = document.querySelector("#tagEditorTitle");
+const closeTagEditorBtn = document.querySelector("#closeTagEditorBtn");
+const cancelTagEditorBtn = document.querySelector("#cancelTagEditorBtn");
+const tagEditId = document.querySelector("#tagEditId");
+const tagNameInput = document.querySelector("#tagNameInput");
+const tagProductChecklist = document.querySelector("#tagProductChecklist");
+const tagProductSelect = document.querySelector("#tagProductSelect");
+const tagPickerSearch = document.querySelector("#tagPickerSearch");
+const tagSelectAllBtn = document.querySelector("#tagSelectAllBtn");
+const tagDeselectAllBtn = document.querySelector("#tagDeselectAllBtn");
+const tagEditorError = document.querySelector("#tagEditorError");
+const saveTagBtn = document.querySelector("#saveTagBtn");
+
 const openSettingsBtn = document.querySelector("#openSettingsBtn");
 const adminSettingsBtn = document.querySelector("#adminSettingsBtn");
 const settingsDialog = document.querySelector("#settingsDialog");
@@ -338,6 +360,10 @@ function renderActions(product) {
   </div>`;
 }
 
+function hasPopularTag(product) {
+  return Array.isArray(product?.tags) && product.tags.includes("ក្លិនពេញនិយម");
+}
+
 function renderGallery(rows) {
   if (!isFragrantica()) { productGallery.innerHTML = ""; return; }
   productGallery.innerHTML = rows.map((product) => {
@@ -358,6 +384,7 @@ function renderGallery(rows) {
       <header class="fragrance-banner">
         <div class="banner-top-row">
           <div class="banner-brand-gender">
+            ${hasPopularTag(product) ? `<span class="product-tag-badge">ក្លិនពេញនិយម</span>` : ""}
             <p class="brand-eyebrow">${escapeHtml(product.brand)}</p>
             ${gender ? `<span class="gender-tag ${gender.className}">${escapeHtml(gender.label)}</span>` : ""}
           </div>
@@ -396,31 +423,38 @@ function productNoteGroups(product) {
 
 function sortProducts(items, sortMode = "brand-asc") {
   const list = [...items];
-  switch (sortMode) {
-    case "brand-asc":
-      return list.sort((a, b) => {
+  return list.sort((a, b) => {
+    // 1. Tag "ក្លិនពេញនិយម" always sorts to top
+    const aPop = hasPopularTag(a);
+    const bPop = hasPopularTag(b);
+    if (aPop && !bPop) return -1;
+    if (!aPop && bPop) return 1;
+
+    // 2. Secondary sort according to chosen sortMode
+    switch (sortMode) {
+      case "brand-asc": {
         const brandA = (a.brand || "").trim();
         const brandB = (b.brand || "").trim();
         const brandCmp = brandA.localeCompare(brandB, undefined, { sensitivity: "base" });
         if (brandCmp !== 0) return brandCmp;
         return (a.name || "").localeCompare(b.name || "", undefined, { sensitivity: "base" });
-      });
-    case "brand-desc":
-      return list.sort((a, b) => {
+      }
+      case "brand-desc": {
         const brandA = (a.brand || "").trim();
         const brandB = (b.brand || "").trim();
         const brandCmp = brandB.localeCompare(brandA, undefined, { sensitivity: "base" });
         if (brandCmp !== 0) return brandCmp;
         return (a.name || "").localeCompare(b.name || "", undefined, { sensitivity: "base" });
-      });
-    case "name-asc":
-      return list.sort((a, b) => (a.name || "").localeCompare(b.name || "", undefined, { sensitivity: "base" }));
-    case "name-desc":
-      return list.sort((a, b) => (b.name || "").localeCompare(a.name || "", undefined, { sensitivity: "base" }));
-    case "default":
-    default:
-      return list;
-  }
+      }
+      case "name-asc":
+        return (a.name || "").localeCompare(b.name || "", undefined, { sensitivity: "base" });
+      case "name-desc":
+        return (b.name || "").localeCompare(a.name || "", undefined, { sensitivity: "base" });
+      case "default":
+      default:
+        return 0;
+    }
+  });
 }
 
 function visibleProducts() {
@@ -456,6 +490,7 @@ function visibleProducts() {
       product.brand,
       product.barcode,
       product.status,
+      ...(Array.isArray(product.tags) ? product.tags : []),
       ...[product.mainAccords, product.topNotes, product.middleNotes, product.baseNotes, product.fragranceNotes].flatMap((items) =>
         Array.isArray(items) ? items.map((item) => (typeof item === "string" ? item : item.name)) : []
       ),
@@ -481,6 +516,7 @@ function updateFilterCounts() {
           product.brand,
           product.barcode,
           product.status,
+          ...(Array.isArray(product.tags) ? product.tags : []),
           ...[product.mainAccords, product.topNotes, product.middleNotes, product.baseNotes, product.fragranceNotes].flatMap((items) =>
             Array.isArray(items) ? items.map((item) => (typeof item === "string" ? item : item.name)) : []
           ),
@@ -546,7 +582,7 @@ function renderTable() {
         return `<tr>
           <td class="product-name">${escapeHtml(product.name)}</td>
           <td>${photoCell}</td>
-          <td>${renderBrand(product)}</td>
+          <td>${renderBrand(product)}${hasPopularTag(product) ? `<div style="margin-top:4px;"><span class="product-tag-badge">ក្លិនពេញនិយម</span></div>` : ""}</td>
           <td>${renderAccords(product.mainAccords)}</td>
           <td>${renderNotes(product.topNotes)}</td>
           <td>${renderNotes(product.baseNotes)}</td>
@@ -791,6 +827,7 @@ function openAddProduct() {
           `<label>${label}<input name="${key}" type="${type}" ${req ? "required" : ""} ${key === "price" ? 'step="any"' : ""} placeholder="${label}"></label>`
       )
       .join("") +
+    `<label>Tags (comma separated)<input name="tags" value="ក្លិនពេញនិយម" placeholder="ក្លិនពេញនិយម"></label>` +
     `<label>Status<select name="status"><option value="Active" selected>Active</option><option value="Deactive">Deactive</option></select></label>`;
 
   document.querySelector("#editLists").innerHTML = isFragrantica()
@@ -814,9 +851,11 @@ function openEditor(product) {
   const fields = product.source === "fragrantica"
     ? [["name", "Product name"], ["photo", "Product photo URL"], ["brand", "Brand"], ["brandLogo", "Brand logo URL"]]
     : [["name", "Product name"], ["photo", "Product photo URL"], ["barcode", "Barcode"], ["price", "Price"]];
+  const currentTagsVal = Array.isArray(product.tags) && product.tags.length ? product.tags.join(", ") : "ក្លិនពេញនិយម";
   document.querySelector("#editFields").innerHTML = fields.map(([key, label]) => `<label>${label}
     <input name="${key}" value="${escapeHtml(product[key] ?? "")}" ${key === "name" ? "required" : ""}
       type="${["photo", "brandLogo"].includes(key) ? "url" : key === "price" ? "number" : "text"}" ${key === "price" ? 'step="any"' : ""}></label>`).join("") +
+    `<label>Tags (comma separated)<input name="tags" value="${escapeHtml(currentTagsVal)}" placeholder="ក្លិនពេញនិយម"></label>` +
     `<label>Status<select name="status"><option value="Active">Active</option><option value="Deactive" ${product.status === "Deactive" ? "selected" : ""}>Deactive</option></select></label>`;
   document.querySelector("#editLists").innerHTML = product.source === "fragrantica"
     ? Object.entries(listFields).map(([field, label]) => `<fieldset data-list="${field}"><legend>${label}</legend>
@@ -911,6 +950,12 @@ editProductForm.addEventListener("submit", async (event) => {
   save.disabled = true;
   try {
     const changes = Object.fromEntries(new FormData(editProductForm));
+    if (changes.tags !== undefined) {
+      changes.tags = String(changes.tags)
+        .split(",")
+        .map((t) => t.trim())
+        .filter(Boolean);
+    }
     for (const fieldset of document.querySelectorAll("#editLists fieldset")) {
       const field = fieldset.dataset.list;
       changes[field] = [...fieldset.querySelectorAll(".edit-list-row")].map((row) => {
@@ -2481,5 +2526,232 @@ logoutBtn?.addEventListener("click", async () => {
   try {
     await fetch("/api/admin/logout", { method: "POST" });
   } catch (_) {}
+});
+
+/* ==========================================================================
+   Tag Settings & Tag Editor Management
+   ========================================================================== */
+let currentTags = [];
+
+async function loadTags() {
+  try {
+    const res = await fetch(`/api/tags?source=${sourceInput?.value || "fragrantica"}`);
+    if (res.ok) {
+      const data = await res.json();
+      currentTags = Array.isArray(data.tags) ? data.tags : [];
+      renderTagTable();
+    }
+  } catch (err) {
+    console.warn("Failed to load tags:", err);
+  }
+}
+
+function renderTagTable() {
+  if (!tagTableBody) return;
+  if (!currentTags.length) {
+    tagTableBody.innerHTML = "";
+    if (tagEmptyState) tagEmptyState.hidden = false;
+    return;
+  }
+  if (tagEmptyState) tagEmptyState.hidden = true;
+
+  tagTableBody.innerHTML = currentTags
+    .map((tag) => {
+      const perfumeChips = (tag.productNames || []).length
+        ? (tag.productNames || []).map((name) => `<span class="perfume-tag-chip">${escapeHtml(name)}</span>`).join("")
+        : `<span class="perfume-tag-chip empty">No perfumes assigned</span>`;
+
+      return `
+        <tr data-tag-id="${escapeHtml(tag.id)}">
+          <td class="tag-name-cell">
+            <span class="tag-pill">🏷️ ${escapeHtml(tag.name)}</span>
+          </td>
+          <td>
+            <div class="tag-perfumes-list">
+              ${perfumeChips}
+            </div>
+          </td>
+          <td class="th-tag-actions">
+            <div class="tag-action-btns">
+              <button type="button" class="tag-action-btn edit" data-tag-action="edit" data-tag-id="${escapeHtml(tag.id)}" title="Edit tag and assigned perfumes">
+                ✏️ Edit
+              </button>
+              <button type="button" class="tag-action-btn delete" data-tag-action="delete" data-tag-id="${escapeHtml(tag.id)}" title="Delete tag">
+                🗑️ Delete
+              </button>
+            </div>
+          </td>
+        </tr>
+      `;
+    })
+    .join("");
+}
+
+function getSelectedTagProductIds() {
+  if (!tagProductChecklist) return [];
+  const checked = tagProductChecklist.querySelectorAll(".tag-item-check:checked");
+  return Array.from(checked).map((cb) => cb.value);
+}
+
+function renderTagChecklist(selectedIds = []) {
+  if (!tagProductChecklist) return;
+  const filterQuery = (tagPickerSearch?.value || "").trim().toLowerCase();
+  const selectedSet = new Set(selectedIds);
+
+  const matchedProducts = products.filter((p) => {
+    if (!filterQuery) return true;
+    return `${p.brand || ""} ${p.name || ""}`.toLowerCase().includes(filterQuery);
+  });
+
+  if (!matchedProducts.length) {
+    tagProductChecklist.innerHTML = `<div class="tag-empty-state" style="padding: 16px;">No perfumes match your search.</div>`;
+    return;
+  }
+
+  tagProductChecklist.innerHTML = matchedProducts
+    .map((p) => {
+      const isChecked = selectedSet.has(p.id);
+      return `
+        <label class="checklist-item">
+          <input type="checkbox" value="${escapeHtml(p.id)}" class="tag-item-check" ${isChecked ? "checked" : ""} />
+          <div class="checklist-label">
+            <strong>${escapeHtml(p.name)}</strong>
+            ${p.brand ? `<span class="checklist-brand">${escapeHtml(p.brand)}</span>` : ""}
+          </div>
+        </label>
+      `;
+    })
+    .join("");
+}
+
+function openTagEditor(tag = null) {
+  if (!tagEditorModal) return;
+  if (tagEditorError) tagEditorError.hidden = true;
+  if (tagPickerSearch) tagPickerSearch.value = "";
+
+  if (tag) {
+    if (tagEditorTitle) tagEditorTitle.textContent = "🏷️ Edit Tag";
+    if (tagEditId) tagEditId.value = tag.id;
+    if (tagNameInput) tagNameInput.value = tag.name;
+  } else {
+    if (tagEditorTitle) tagEditorTitle.textContent = "🏷️ Add New Tag";
+    if (tagEditId) tagEditId.value = "";
+    if (tagNameInput) tagNameInput.value = "ក្លិនពេញនិយម";
+  }
+
+  renderTagChecklist(tag ? tag.productIds || [] : []);
+  tagEditorModal.showModal();
+}
+
+tagSettingsBtn?.addEventListener("click", () => {
+  closeSidebar();
+  loadTags();
+  tagSettingsDialog?.showModal();
+});
+
+closeTagSettingsBtn?.addEventListener("click", () => tagSettingsDialog?.close());
+dismissTagSettingsBtn?.addEventListener("click", () => tagSettingsDialog?.close());
+
+openAddTagBtn?.addEventListener("click", () => {
+  openTagEditor(null);
+});
+
+closeTagEditorBtn?.addEventListener("click", () => tagEditorModal?.close());
+cancelTagEditorBtn?.addEventListener("click", () => tagEditorModal?.close());
+
+tagSelectAllBtn?.addEventListener("click", () => {
+  if (!tagProductChecklist) return;
+  const checkboxes = tagProductChecklist.querySelectorAll(".tag-item-check");
+  checkboxes.forEach((cb) => (cb.checked = true));
+});
+
+tagDeselectAllBtn?.addEventListener("click", () => {
+  if (!tagProductChecklist) return;
+  const checkboxes = tagProductChecklist.querySelectorAll(".tag-item-check");
+  checkboxes.forEach((cb) => (cb.checked = false));
+});
+
+tagPickerSearch?.addEventListener("input", () => {
+  const selectedIds = getSelectedTagProductIds();
+  renderTagChecklist(selectedIds);
+});
+
+tagTableBody?.addEventListener("click", async (event) => {
+  const btn = event.target.closest("[data-tag-action]");
+  if (!btn) return;
+  const action = btn.dataset.tagAction;
+  const tagId = btn.dataset.tagId;
+  const tag = currentTags.find((t) => t.id === tagId);
+
+  if (action === "edit" && tag) {
+    openTagEditor(tag);
+  } else if (action === "delete" && tag) {
+    if (!confirm(`Are you sure you want to delete tag "${tag.name}"?`)) return;
+    try {
+      btn.disabled = true;
+      const res = await fetch("/api/tags/delete", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ id: tag.id, source: sourceInput?.value || "fragrantica" }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to delete tag.");
+      currentTags = Array.isArray(data.tags) ? data.tags : [];
+      renderTagTable();
+      if (Array.isArray(data.products)) {
+        setProducts(data.products, `Tag "${tag.name}" deleted`);
+      }
+    } catch (err) {
+      alert(err.message || "Could not delete tag.");
+    } finally {
+      btn.disabled = false;
+    }
+  }
+});
+
+tagEditorForm?.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  if (saveTagBtn) saveTagBtn.disabled = true;
+  if (tagEditorError) tagEditorError.hidden = true;
+
+  try {
+    const tagName = (tagNameInput?.value || "").trim();
+    if (!tagName) throw new Error("Tag name is required.");
+
+    const selectedProductIds = getSelectedTagProductIds();
+    const tagId = (tagEditId?.value || "").trim();
+    const source = sourceInput?.value || "fragrantica";
+
+    const payload = {
+      id: tagId || undefined,
+      name: tagName,
+      productIds: selectedProductIds,
+      source,
+    };
+
+    const res = await fetch("/api/tags", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "Could not save tag.");
+
+    currentTags = Array.isArray(data.tags) ? data.tags : [];
+    renderTagTable();
+    if (Array.isArray(data.products)) {
+      setProducts(data.products, `Tag "${tagName}" saved`);
+    }
+
+    tagEditorModal?.close();
+  } catch (err) {
+    if (tagEditorError) {
+      tagEditorError.textContent = err.message || "Failed to save tag.";
+      tagEditorError.hidden = false;
+    }
+  } finally {
+    if (saveTagBtn) saveTagBtn.disabled = false;
+  }
 });
 

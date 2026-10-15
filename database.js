@@ -21,6 +21,10 @@ const DEFAULT_SETTINGS = {
   telegramContactText: "Chat with us on Telegram",
 };
 
+const DEFAULT_TAGS = [
+  { id: "default-popular", name: "ក្លិនពេញនិយម" },
+];
+
 function problem(message, statusCode = 400) {
   return Object.assign(new Error(message), { statusCode });
 }
@@ -78,6 +82,19 @@ function cleanProduct(source, input) {
     if (input.price !== "" && input.price !== undefined && !Number.isFinite(Number(input.price))) throw problem("Price must be a number.");
     output.price = input.price === "" || input.price === undefined ? "" : Number(input.price);
   }
+
+  let tags;
+  if (Array.isArray(input.tags)) {
+    tags = [...new Set(input.tags.map((t) => String(t).trim()).filter(Boolean))];
+  } else if (typeof input.tags === "string") {
+    tags = [...new Set(input.tags.split(",").map((t) => t.trim()).filter(Boolean))];
+  } else if (input.tags === null) {
+    tags = [];
+  } else {
+    tags = ["ក្លិនពេញនិយម"];
+  }
+  output.tags = tags;
+
   return output;
 }
 
@@ -91,6 +108,9 @@ function productKey(source, url, product) {
 
 function fromRow(row) {
   const data = typeof row.data === "string" ? JSON.parse(row.data) : row.data;
+  if (!Array.isArray(data.tags)) {
+    data.tags = ["ក្លិនពេញនិយម"];
+  }
   return { ...data, id: row.id, source: row.source, sourceUrl: row.source_url,
     status: row.status, version: row.version, createdAt: row.created_at, updatedAt: row.updated_at };
 }
@@ -209,10 +229,11 @@ function createFallbackStore(options = {}) {
     async edit(id, changes, version) {
       const item = memoryProducts.get(id);
       if (!item) throw problem("Product not found.", 404);
-      if (version !== item.version) throw problem("This product changed. Reload it before editing.", 409);
-      if (!["Active", "Deactive"].includes(changes.status)) throw problem("Status must be Active or Deactive.");
+      if (version !== undefined && version !== item.version) throw problem("This product changed. Reload it before editing.", 409);
+      const newStatus = changes.status || item.status;
+      if (!["Active", "Deactive"].includes(newStatus)) throw problem("Status must be Active or Deactive.");
       const data = cleanProduct(item.source, { ...item, ...changes });
-      Object.assign(item, data, { status: changes.status, version: item.version + 1, updatedAt: new Date().toISOString() });
+      Object.assign(item, data, { status: newStatus, version: item.version + 1, updatedAt: new Date().toISOString() });
       return item.source;
     },
     async delete(id, version) {
@@ -315,6 +336,110 @@ function createFallbackStore(options = {}) {
     async resetSettings() {
       memorySettings = { ...DEFAULT_SETTINGS };
       return { ...DEFAULT_SETTINGS };
+    },
+    async listTags(source = "fragrantica") {
+      const allProducts = await this.list(source);
+      let tagsSetting = [];
+      try {
+        tagsSetting = JSON.parse(memorySettings.catalog_tags || "[]");
+      } catch (_) {}
+      if (!Array.isArray(tagsSetting) || !tagsSetting.length) {
+        tagsSetting = DEFAULT_TAGS.map((t) => ({ ...t }));
+      }
+      const knownNames = new Set(tagsSetting.map((t) => t.name));
+      for (const prod of allProducts) {
+        if (Array.isArray(prod.tags)) {
+          for (const tagName of prod.tags) {
+            if (tagName && !knownNames.has(tagName)) {
+              knownNames.add(tagName);
+              tagsSetting.push({ id: "tag-" + randomUUID().slice(0, 8), name: tagName });
+            }
+          }
+        }
+      }
+      return tagsSetting.map((tag) => {
+        const matching = allProducts.filter((p) => Array.isArray(p.tags) && p.tags.includes(tag.name));
+        return {
+          id: tag.id,
+          name: tag.name,
+          productIds: matching.map((p) => p.id),
+          productNames: matching.map((p) => p.name),
+        };
+      });
+    },
+    async saveTag(source = "fragrantica", { id, name, productIds = [] }) {
+      const tagName = String(name || "").trim();
+      if (!tagName) throw problem("Tag name is required.");
+      const allProducts = await this.list(source);
+      let tagsSetting = [];
+      try {
+        tagsSetting = JSON.parse(memorySettings.catalog_tags || "[]");
+      } catch (_) {}
+      if (!Array.isArray(tagsSetting) || !tagsSetting.length) {
+        tagsSetting = DEFAULT_TAGS.map((t) => ({ ...t }));
+      }
+      let targetTag = id ? tagsSetting.find((t) => t.id === id) : null;
+      const oldName = targetTag ? targetTag.name : null;
+      if (!targetTag) {
+        targetTag = { id: id || ("tag-" + randomUUID().slice(0, 8)), name: tagName };
+        tagsSetting.push(targetTag);
+      } else {
+        targetTag.name = tagName;
+      }
+      memorySettings.catalog_tags = JSON.stringify(tagsSetting);
+
+      const targetIds = new Set(productIds);
+      for (const prod of allProducts) {
+        let currentTags = Array.isArray(prod.tags) ? [...prod.tags] : [];
+        const hadOld = oldName && currentTags.includes(oldName);
+        const hasNew = currentTags.includes(tagName);
+        const shouldHave = targetIds.has(prod.id);
+
+        let modified = false;
+        if (shouldHave) {
+          if (oldName && oldName !== tagName && hadOld) {
+            currentTags = currentTags.filter((t) => t !== oldName);
+            modified = true;
+          }
+          if (!hasNew) {
+            currentTags.push(tagName);
+            modified = true;
+          }
+        } else {
+          if (hasNew || hadOld) {
+            currentTags = currentTags.filter((t) => t !== tagName && t !== oldName);
+            modified = true;
+          }
+        }
+        if (modified) {
+          await this.edit(prod.id, { tags: currentTags }, prod.version);
+        }
+      }
+      return this.listTags(source);
+    },
+    async deleteTag(source = "fragrantica", tagId) {
+      if (!tagId) throw problem("Tag ID is required.");
+      const allProducts = await this.list(source);
+      let tagsSetting = [];
+      try {
+        tagsSetting = JSON.parse(memorySettings.catalog_tags || "[]");
+      } catch (_) {}
+      if (!Array.isArray(tagsSetting) || !tagsSetting.length) {
+        tagsSetting = DEFAULT_TAGS.map((t) => ({ ...t }));
+      }
+      const tagIndex = tagsSetting.findIndex((t) => t.id === tagId);
+      const tagToDelete = tagsSetting[tagIndex];
+      if (tagToDelete) {
+        tagsSetting.splice(tagIndex, 1);
+        memorySettings.catalog_tags = JSON.stringify(tagsSetting);
+        for (const prod of allProducts) {
+          if (Array.isArray(prod.tags) && prod.tags.includes(tagToDelete.name)) {
+            const newTags = prod.tags.filter((t) => t !== tagToDelete.name);
+            await this.edit(prod.id, { tags: newTags }, prod.version);
+          }
+        }
+      }
+      return this.listTags(source);
     },
   };
 
@@ -450,11 +575,13 @@ async function createStore(options = {}) {
       return transaction(async (c) => {
         const [[row]] = await c.execute("SELECT * FROM scraper_products WHERE id=?", [id]);
         if (!row) throw problem("Product not found.", 404);
-        if (version !== row.version) throw problem("This product changed. Reload it before editing.", 409);
-        if (!["Active", "Deactive"].includes(changes.status)) throw problem("Status must be Active or Deactive.");
-        const data = cleanProduct(row.source, { ...fromRow(row), ...changes });
+        if (version !== undefined && version !== row.version) throw problem("This product changed. Reload it before editing.", 409);
+        const currentData = fromRow(row);
+        const newStatus = changes.status || currentData.status;
+        if (!["Active", "Deactive"].includes(newStatus)) throw problem("Status must be Active or Deactive.");
+        const data = cleanProduct(row.source, { ...currentData, ...changes });
         await c.execute("UPDATE scraper_products SET data=?, status=?, version=version+1 WHERE id=?",
-          [JSON.stringify(data), changes.status, id]);
+          [JSON.stringify(data), newStatus, id]);
         return row.source;
       });
     },
@@ -567,6 +694,119 @@ async function createStore(options = {}) {
         return { ...DEFAULT_SETTINGS };
       });
     },
+    async listTags(source = "fragrantica") {
+      const allProducts = await this.list(source);
+      const [rows] = await pool.execute("SELECT setting_value FROM scraper_settings WHERE setting_key='catalog_tags'");
+      let tagsSetting = [];
+      if (rows.length && rows[0].setting_value) {
+        try { tagsSetting = JSON.parse(rows[0].setting_value); } catch (_) {}
+      }
+      if (!Array.isArray(tagsSetting) || !tagsSetting.length) {
+        tagsSetting = DEFAULT_TAGS.map((t) => ({ ...t }));
+      }
+      const knownNames = new Set(tagsSetting.map((t) => t.name));
+      for (const prod of allProducts) {
+        if (Array.isArray(prod.tags)) {
+          for (const tagName of prod.tags) {
+            if (tagName && !knownNames.has(tagName)) {
+              knownNames.add(tagName);
+              tagsSetting.push({ id: "tag-" + randomUUID().slice(0, 8), name: tagName });
+            }
+          }
+        }
+      }
+      return tagsSetting.map((tag) => {
+        const matching = allProducts.filter((p) => Array.isArray(p.tags) && p.tags.includes(tag.name));
+        return {
+          id: tag.id,
+          name: tag.name,
+          productIds: matching.map((p) => p.id),
+          productNames: matching.map((p) => p.name),
+        };
+      });
+    },
+    async saveTag(source = "fragrantica", { id, name, productIds = [] }) {
+      const tagName = String(name || "").trim();
+      if (!tagName) throw problem("Tag name is required.");
+      const allProducts = await this.list(source);
+      const [rows] = await pool.execute("SELECT setting_value FROM scraper_settings WHERE setting_key='catalog_tags'");
+      let tagsSetting = [];
+      if (rows.length && rows[0].setting_value) {
+        try { tagsSetting = JSON.parse(rows[0].setting_value); } catch (_) {}
+      }
+      if (!Array.isArray(tagsSetting) || !tagsSetting.length) {
+        tagsSetting = DEFAULT_TAGS.map((t) => ({ ...t }));
+      }
+      let targetTag = id ? tagsSetting.find((t) => t.id === id) : null;
+      const oldName = targetTag ? targetTag.name : null;
+      if (!targetTag) {
+        targetTag = { id: id || ("tag-" + randomUUID().slice(0, 8)), name: tagName };
+        tagsSetting.push(targetTag);
+      } else {
+        targetTag.name = tagName;
+      }
+      await pool.execute(
+        "INSERT INTO scraper_settings (setting_key, setting_value) VALUES ('catalog_tags', ?) ON DUPLICATE KEY UPDATE setting_value=VALUES(setting_value)",
+        [JSON.stringify(tagsSetting)]
+      );
+
+      const targetIds = new Set(productIds);
+      for (const prod of allProducts) {
+        let currentTags = Array.isArray(prod.tags) ? [...prod.tags] : [];
+        const hadOld = oldName && currentTags.includes(oldName);
+        const hasNew = currentTags.includes(tagName);
+        const shouldHave = targetIds.has(prod.id);
+
+        let modified = false;
+        if (shouldHave) {
+          if (oldName && oldName !== tagName && hadOld) {
+            currentTags = currentTags.filter((t) => t !== oldName);
+            modified = true;
+          }
+          if (!hasNew) {
+            currentTags.push(tagName);
+            modified = true;
+          }
+        } else {
+          if (hasNew || hadOld) {
+            currentTags = currentTags.filter((t) => t !== tagName && t !== oldName);
+            modified = true;
+          }
+        }
+        if (modified) {
+          await this.edit(prod.id, { tags: currentTags }, prod.version);
+        }
+      }
+      return this.listTags(source);
+    },
+    async deleteTag(source = "fragrantica", tagId) {
+      if (!tagId) throw problem("Tag ID is required.");
+      const allProducts = await this.list(source);
+      const [rows] = await pool.execute("SELECT setting_value FROM scraper_settings WHERE setting_key='catalog_tags'");
+      let tagsSetting = [];
+      if (rows.length && rows[0].setting_value) {
+        try { tagsSetting = JSON.parse(rows[0].setting_value); } catch (_) {}
+      }
+      if (!Array.isArray(tagsSetting) || !tagsSetting.length) {
+        tagsSetting = DEFAULT_TAGS.map((t) => ({ ...t }));
+      }
+      const tagIndex = tagsSetting.findIndex((t) => t.id === tagId);
+      const tagToDelete = tagsSetting[tagIndex];
+      if (tagToDelete) {
+        tagsSetting.splice(tagIndex, 1);
+        await pool.execute(
+          "INSERT INTO scraper_settings (setting_key, setting_value) VALUES ('catalog_tags', ?) ON DUPLICATE KEY UPDATE setting_value=VALUES(setting_value)",
+          [JSON.stringify(tagsSetting)]
+        );
+        for (const prod of allProducts) {
+          if (Array.isArray(prod.tags) && prod.tags.includes(tagToDelete.name)) {
+            const newTags = prod.tags.filter((t) => t !== tagToDelete.name);
+            await this.edit(prod.id, { tags: newTags }, prod.version);
+          }
+        }
+      }
+      return this.listTags(source);
+    },
   };
   return store;
 }
@@ -579,4 +819,4 @@ if (require.main === module) {
   })().catch((error) => { console.error(`Database setup failed: ${error.code || error.message}`); process.exitCode = 1; });
 }
 
-module.exports = { createStore, createFallbackStore, parseDbConfig, canonicalUrl, cleanProduct, productKey, problem, DEFAULT_SETTINGS };
+module.exports = { createStore, createFallbackStore, parseDbConfig, canonicalUrl, cleanProduct, productKey, problem, DEFAULT_SETTINGS, DEFAULT_TAGS };
