@@ -13,6 +13,7 @@ const filterInput = document.querySelector("#filterInput");
 const filterMen = document.querySelector("#filterMen");
 const filterWomen = document.querySelector("#filterWomen");
 const filterUnisex = document.querySelector("#filterUnisex");
+const sortSelect = document.querySelector("#sortSelect");
 const copyJson = document.querySelector("#copyJson");
 const downloadJson = document.querySelector("#downloadJson");
 const sourceInput = document.querySelector("#source");
@@ -214,7 +215,7 @@ function updateSourceView() {
   detailCountLabel.textContent = fragrance ? "With brand" : "With barcode";
   filterInput.placeholder = fragrance ? "Filter name, brand, accords or notes" : "Filter name or barcode";
   resultsHead.innerHTML = fragrance
-    ? '<th>Product Name</th><th>Product Photo</th><th>Brand</th><th>Main Accords</th><th>Top Notes</th><th>Base Notes</th><th>Fragrance Notes</th><th class="status-column">Status</th><th class="action-column">Action</th>'
+    ? '<th>Product Name</th><th>Product Photo</th><th class="th-sortable" id="thBrand" title="Click to sort by brand">Brand</th><th>Main Accords</th><th>Top Notes</th><th>Base Notes</th><th>Fragrance Notes</th><th class="status-column">Status</th><th class="action-column">Action</th>'
     : '<th>Photo</th><th>Barcode</th><th>Name</th><th class="price-column">Price</th><th>Status</th><th>Action</th>';
   resultsHead.closest("table").classList.toggle("fragrance-table", fragrance);
   if (toolbarHeading) {
@@ -378,13 +379,43 @@ function productNoteGroups(product) {
   return [...tiers.filter(([, notes]) => notes?.length), ["Fragrance Notes", product.fragranceNotes]];
 }
 
+function sortProducts(items, sortMode = "brand-asc") {
+  const list = [...items];
+  switch (sortMode) {
+    case "brand-asc":
+      return list.sort((a, b) => {
+        const brandA = (a.brand || "").trim();
+        const brandB = (b.brand || "").trim();
+        const brandCmp = brandA.localeCompare(brandB, undefined, { sensitivity: "base" });
+        if (brandCmp !== 0) return brandCmp;
+        return (a.name || "").localeCompare(b.name || "", undefined, { sensitivity: "base" });
+      });
+    case "brand-desc":
+      return list.sort((a, b) => {
+        const brandA = (a.brand || "").trim();
+        const brandB = (b.brand || "").trim();
+        const brandCmp = brandB.localeCompare(brandA, undefined, { sensitivity: "base" });
+        if (brandCmp !== 0) return brandCmp;
+        return (a.name || "").localeCompare(b.name || "", undefined, { sensitivity: "base" });
+      });
+    case "name-asc":
+      return list.sort((a, b) => (a.name || "").localeCompare(b.name || "", undefined, { sensitivity: "base" }));
+    case "name-desc":
+      return list.sort((a, b) => (b.name || "").localeCompare(a.name || "", undefined, { sensitivity: "base" }));
+    case "default":
+    default:
+      return list;
+  }
+}
+
 function visibleProducts() {
   const query = filterInput.value.trim().toLowerCase();
   const menChecked = Boolean(filterMen?.checked);
   const womenChecked = Boolean(filterWomen?.checked);
   const unisexChecked = Boolean(filterUnisex?.checked);
+  const sortMode = sortSelect?.value || "brand-asc";
 
-  return products.filter((product) => {
+  const filtered = products.filter((product) => {
     // Frontend storefront only shows active products
     if (currentMode === "frontend" && product.status === "Deactive") {
       return false;
@@ -418,6 +449,8 @@ function visibleProducts() {
       .toLowerCase()
       .includes(query);
   });
+
+  return sortProducts(filtered, sortMode);
 }
 
 function updateFilterCounts() {
@@ -476,6 +509,12 @@ function renderMetrics() {
 
 function renderTable() {
   updateFilterCounts();
+  const thBrand = document.querySelector("#thBrand");
+  if (thBrand) {
+    const currentSort = sortSelect?.value || "brand-asc";
+    thBrand.classList.toggle("sorted-asc", currentSort === "brand-asc");
+    thBrand.classList.toggle("sorted-desc", currentSort === "brand-desc");
+  }
   const rows = visibleProducts();
   emptyState.hidden = rows.length > 0;
   const isFiltered = filterInput.value.trim() || filterMen?.checked || filterWomen?.checked || filterUnisex?.checked;
@@ -1638,6 +1677,17 @@ filterInput.addEventListener("input", renderTable);
 filterMen?.addEventListener("change", renderTable);
 filterWomen?.addEventListener("change", renderTable);
 filterUnisex?.addEventListener("change", renderTable);
+sortSelect?.addEventListener("change", (e) => {
+  try { localStorage.setItem("pka_product_sort", e.target.value); } catch (_) {}
+  renderTable();
+});
+resultsHead?.addEventListener("click", (e) => {
+  const th = e.target.closest("#thBrand");
+  if (!th || !sortSelect) return;
+  sortSelect.value = sortSelect.value === "brand-asc" ? "brand-desc" : "brand-asc";
+  try { localStorage.setItem("pka_product_sort", sortSelect.value); } catch (_) {}
+  renderTable();
+});
 copyJson?.addEventListener("click", copyProductsJson);
 downloadJson?.addEventListener("click", downloadProductsJson);
 catalogueView.addEventListener("click", () => { resultsView = "catalogue"; updateResultsView(); });
@@ -1700,6 +1750,10 @@ if (sourceInput) sourceInput.value = "fragrantica";
 updateSourceView();
 setAppMode(currentMode);
 loadSavedSettings();
+try {
+  const savedSort = localStorage.getItem("pka_product_sort");
+  if (savedSort && sortSelect) sortSelect.value = savedSort;
+} catch (_) {}
 loadSavedProducts();
 initHoldToCopyListeners();
 
