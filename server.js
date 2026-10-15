@@ -295,7 +295,7 @@ const server = http.createServer(async (request, response) => {
     return;
   }
 
-  if (request.method === "POST" && requestUrl.pathname === "/api/upload-logo") {
+  if (request.method === "POST" && (requestUrl.pathname === "/api/upload-logo" || requestUrl.pathname === "/api/upload-hero-bg" || requestUrl.pathname === "/api/upload-image")) {
     try {
       const payload = await readRequestBody(request);
       if (!payload || !payload.data) {
@@ -343,7 +343,8 @@ const server = http.createServer(async (request, response) => {
         fs.mkdirSync(uploadsDir, { recursive: true });
       }
 
-      const filename = `logo-${Date.now()}-${randomUUID().slice(0, 8)}${ext}`;
+      const prefix = requestUrl.pathname === "/api/upload-hero-bg" ? "hero-bg" : "logo";
+      const filename = `${prefix}-${Date.now()}-${randomUUID().slice(0, 8)}${ext}`;
       const filePath = path.join(uploadsDir, filename);
       fs.writeFileSync(filePath, buffer);
 

@@ -59,6 +59,10 @@
             <span class="nav-icon">🛍️</span>
             <span class="nav-label" id="viewFrontendText">Frontend (PKA SCENT)</span>
           </button>
+          <button id="websiteBioBtn" class="sidebar-nav-btn" type="button" title="Website Bio">
+            <span class="nav-icon">⚜️</span>
+            <span class="nav-label">Website Bio</span>
+          </button>
           <button id="adminSettingsBtn" class="sidebar-nav-btn" type="button" title="Site Settings">
             <span class="nav-icon">⚙️</span>
             <span class="nav-label">Settings</span>
@@ -162,9 +166,9 @@
       <!-- Storefront Hero Banner (Visible on Customer / Frontend View) -->
       <section class="storefront-hero" id="storefrontHero">
         <div class="hero-content">
-          <span class="hero-subheading">HAUTE PARFUMERIE • PKA SCENT</span>
-          <h2>Exclusive Scent Discovery</h2>
-          <p>Explore luxury olfactory pyramids, vibrant main accords, and signature designer perfumes.</p>
+          <span class="hero-subheading" id="heroSubheading">HAUTE PARFUMERIE • PKA SCENT</span>
+          <h2 id="heroTitle">Exclusive Scent Discovery</h2>
+          <p id="heroText">Explore luxury olfactory pyramids, vibrant main accords, and signature designer perfumes.</p>
         </div>
       </section>
 
@@ -330,18 +334,19 @@
       </form>
     </dialog>
 
-    <dialog id="settingsDialog" class="settings-dialog" aria-labelledby="settingsTitle">
-      <form id="settingsForm" class="settings-form">
+    <!-- Website Bio Modal (Brand, Logo, Header Bio, Foot Tag) -->
+    <dialog id="websiteBioDialog" class="settings-dialog" aria-labelledby="websiteBioTitle">
+      <form id="websiteBioForm" class="settings-form">
         <div class="settings-dialog-header">
           <div>
-            <span class="settings-badge">Configuration</span>
-            <h2 id="settingsTitle">Site &amp; Brand Settings</h2>
+            <span class="settings-badge">⚜️ Boutique Identity</span>
+            <h2 id="websiteBioTitle">Website Bio</h2>
           </div>
-          <button id="closeSettingsBtn" class="close-icon-btn" type="button" aria-label="Close settings dialog">✕</button>
+          <button id="closeWebsiteBioBtn" class="close-icon-btn" type="button" aria-label="Close website bio dialog">✕</button>
         </div>
 
         <p class="settings-intro">
-          Customize your boutique branding: change the logo symbol or image, project title, and footer tag.
+          Manage your boutique identity: brand name, logo, header bio (storefront banner &amp; background), and footer note.
         </p>
 
         <div class="settings-grid">
@@ -439,6 +444,108 @@
             </div>
           </div>
 
+          <!-- Section: Header Bio -->
+          <div class="setting-section-divider">
+            <span class="section-divider-title">✨ Header Bio (Frontend Storefront Banner)</span>
+          </div>
+
+          <!-- Hero Subheading -->
+          <div class="setting-row">
+            <label for="settingHeroSubheading" class="setting-label">
+              <span>Header Bio Subheading</span>
+              <small>Gold badge text at the top of the storefront hero banner</small>
+            </label>
+            <input
+              id="settingHeroSubheading"
+              name="heroSubheading"
+              type="text"
+              maxlength="200"
+              placeholder="e.g. HAUTE PARFUMERIE • PKA SCENT"
+              class="setting-control"
+            />
+          </div>
+
+          <!-- Hero Title -->
+          <div class="setting-row">
+            <label for="settingHeroTitle" class="setting-label">
+              <span>Header Bio Title</span>
+              <small>Main headline displayed on the storefront hero banner</small>
+            </label>
+            <input
+              id="settingHeroTitle"
+              name="heroTitle"
+              type="text"
+              maxlength="200"
+              placeholder="e.g. Exclusive Scent Discovery"
+              class="setting-control"
+            />
+          </div>
+
+          <!-- Hero Description Text -->
+          <div class="setting-row">
+            <label for="settingHeroText" class="setting-label">
+              <span>Header Bio Description</span>
+              <small>Subtitle paragraph description displayed below the title</small>
+            </label>
+            <textarea
+              id="settingHeroText"
+              name="heroText"
+              rows="2"
+              maxlength="500"
+              placeholder="e.g. Explore luxury olfactory pyramids, vibrant main accords, and signature designer perfumes."
+              class="setting-control setting-textarea"
+            ></textarea>
+          </div>
+
+          <!-- Hero Background Image (with Drag & Drop or Upload) -->
+          <div class="setting-row">
+            <label for="settingHeroBackground" class="setting-label">
+              <span>Header Bio Background</span>
+              <small>Background image below logo frontend (drag &amp; drop file, browse image, or enter URL)</small>
+            </label>
+            <div class="hero-bg-control-wrap">
+              <input
+                id="settingHeroBackground"
+                name="heroBackground"
+                type="text"
+                maxlength="5000000"
+                placeholder="e.g. /header-bg.png or /uploads/hero-bg.jpg"
+                class="setting-control"
+              />
+
+              <div class="logo-dropzone hero-bg-dropzone" id="heroBgDropzone" role="button" tabindex="0" aria-label="Upload hero background by dragging and dropping or browsing file">
+                <input
+                  type="file"
+                  id="heroBgFileInput"
+                  accept="image/png,image/jpeg,image/webp,image/svg+xml,image/gif"
+                  style="display: none;"
+                />
+                <div class="dropzone-content">
+                  <span class="dropzone-icon" aria-hidden="true">🖼️</span>
+                  <div class="dropzone-text">
+                    <strong>Drag &amp; drop hero background here</strong> or <span class="dropzone-browse-link">browse file</span>
+                  </div>
+                  <span class="dropzone-hint">PNG, JPG, WEBP, SVG (Luxury Storefront Photo)</span>
+                </div>
+              </div>
+
+              <div id="heroBgUploadInfo" class="logo-upload-info" hidden>
+                <span class="upload-info-icon" aria-hidden="true">✓</span>
+                <span id="heroBgUploadName" class="upload-info-name">hero-bg.png</span>
+                <button type="button" id="heroBgClearUploadBtn" class="upload-clear-btn" title="Reset to default background">✕</button>
+              </div>
+
+              <!-- Live Mini Hero Banner Preview -->
+              <div class="hero-live-preview" id="heroLivePreview" title="Live Hero Banner Preview">
+                <div class="hero-live-preview-content">
+                  <span class="hero-preview-subheading" id="previewHeroSubheading">HAUTE PARFUMERIE • PKA SCENT</span>
+                  <h4 class="hero-preview-title" id="previewHeroTitle">Exclusive Scent Discovery</h4>
+                  <p class="hero-preview-text" id="previewHeroText">Explore luxury olfactory pyramids, vibrant main accords, and signature designer perfumes.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <!-- Foot Tag Field -->
           <div class="setting-row">
             <label for="settingFootTag" class="setting-label">
@@ -455,7 +562,32 @@
               class="setting-control setting-textarea"
             ></textarea>
           </div>
+        </div>
 
+        <p id="websiteBioStatusMsg" class="settings-status-msg" role="alert" hidden></p>
+
+        <div class="editor-actions settings-actions">
+          <button id="cancelWebsiteBioBtn" class="secondary-button" type="button">Cancel</button>
+          <button id="saveWebsiteBioBtn" class="primary-button" type="submit">Save Website Bio</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="settingsDialog" class="settings-dialog" aria-labelledby="settingsTitle">
+      <form id="settingsForm" class="settings-form">
+        <div class="settings-dialog-header">
+          <div>
+            <span class="settings-badge">Configuration</span>
+            <h2 id="settingsTitle">Site Settings</h2>
+          </div>
+          <button id="closeSettingsBtn" class="close-icon-btn" type="button" aria-label="Close settings dialog">✕</button>
+        </div>
+
+        <p class="settings-intro">
+          Configure scraper defaults, Telegram bot scraper, and customer contact widget.
+        </p>
+
+        <div class="settings-grid">
           <!-- Default View Website Field -->
           <div class="setting-row">
             <label for="settingDefaultWebsite" class="setting-label">

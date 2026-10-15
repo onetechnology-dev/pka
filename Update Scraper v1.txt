@@ -80,13 +80,29 @@ token to access the HTTP API: 8670278807:AAGODQKhNr4vdnWnI47AEEzNftRAqzkMGO0
 -Update feature copy as image on multiple select as seperate each image per panel
 -Update feature copy as image multiple select into one clipboard as seperate each image per panel without module popup as attach file.
 -Update feature copy as image by multiple selected copy and past into clipboard as seperate each image per panel make sure it is not merge to one file and past to one clipboard with multiple image like this attach file.
--Update add new feature Add Tag for product list​ on backend after add scrapper or add new product as below:
--Create module popup with input multiple select and Set default tag "ក្លិនពេញនិយម"​.
+-Update add new feature Add Tag on backend for short order as top product list ​after add scrapper or add new product as below:
+-Add new nave menu: tag Settings below add product with feature tag list with column: tag name, perfume names(product name) and action( (add/edit/delete) feature.
+-Show module popup with input multiple select and Set default tag "ក្លិនពេញនិយម"​.
 -Include tag on feature search.
 -Show only tag "ក្លិនពេញនិយម" on frontend before short brand and set order short by this tag.
+Update apply font for only text font khmer as google font Kantumruy Pro.
+
+-Update add feature tag on product list backend before button edit.
+-Update disappear button settings below header logo backend.
+
 
 -Update ux/ui backend as below:
+-Disappear Admin Controls, Show browser.
+-Move input search new row above filter men, women, unisex.
+-Change label name filter, Men to "ប្រុស", Women to "ស្រី", Unisex = "ស្រី/ប្រុស" both frontend and backend.
 -Disappear panel (Products,With brand, With photo, Status) and Fragrance Inventory (prduct view, Table).
 -Update create nav left side menu and move all button to nav menu for responsive ux/ui mobile and keep only one button settins on backend.
 
--
+-Update add new feature Website Bio on backend as below:
+-Create new nav menu Website Bio above button Settings and Move Feature Project Name, Header Subtitle, Logo (Icon Symbol or Image URL), Foot Tag (Footer Tag / Note) from settings to Website Bio.
+-Add new feature name: Header Bio on feature Website Bio backend to edit text header and backgroundbelow logo frontend as attach file with feature drag and drop or upload file.
+
+-Update change button edit, delete on product list backend from text to icon. 
+-Update disappear button short order by Brand on frontend.
+-Update add new column name: Filter on feature tag and change column name: Perfume Names (Product Name) to Perfume Names.
+

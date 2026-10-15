@@ -3728,3 +3728,78 @@ body.mode-frontend .product-tag-badge {
 .fragrance-table .action-column {
   min-width: 170px;
 }
+
+/* Website Bio and Header Bio Styles */
+.hero-bg-control-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.hero-bg-dropzone {
+  border-color: rgba(212, 175, 55, 0.4);
+}
+
+.hero-bg-dropzone:hover,
+.hero-bg-dropzone.drag-active {
+  border-color: #d4af37;
+  background: rgba(212, 175, 55, 0.08);
+}
+
+.hero-live-preview {
+  position: relative;
+  margin-top: 10px;
+  padding: 22px 24px;
+  border-radius: 12px;
+  background-color: #170410;
+  background-image:
+    linear-gradient(
+      90deg,
+      rgba(20, 5, 16, 0.90) 0%,
+      rgba(20, 5, 16, 0.76) 52%,
+      rgba(15, 4, 12, 0.52) 100%
+    ),
+    url('/header-bg.png');
+  background-size: cover;
+  background-position: center 32%;
+  background-repeat: no-repeat;
+  color: #ffffff;
+  border: 1px solid rgba(212, 175, 55, 0.42);
+  box-shadow: 0 4px 16px rgba(18, 4, 14, 0.40);
+  overflow: hidden;
+}
+
+.hero-live-preview-content {
+  position: relative;
+  z-index: 2;
+  max-width: 580px;
+}
+
+.hero-preview-subheading {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  color: #e5c158;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9);
+}
+
+.hero-preview-title {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 6px;
+  color: #ffffff;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.85);
+}
+
+.hero-preview-text {
+  margin: 0;
+  font-size: 12px;
+  opacity: 0.92;
+  line-height: 1.45;
+  color: #ffffff;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.85);
+}

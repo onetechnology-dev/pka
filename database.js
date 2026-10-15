@@ -11,6 +11,10 @@ const DEFAULT_SETTINGS = {
   subtitle: "Luxury Fragrance Collection",
   logo: "⚜️",
   footTag: "HAUTE PARFUMERIE • PKA SCENT — Exclusive Fragrance Discovery & Scraper Portal",
+  heroSubheading: "HAUTE PARFUMERIE • PKA SCENT",
+  heroTitle: "Exclusive Scent Discovery",
+  heroText: "Explore luxury olfactory pyramids, vibrant main accords, and signature designer perfumes.",
+  heroBackground: "/header-bg.png",
   defaultWebsite: "fragrantica",
   telegramBotToken: "8670278807:AAGODQKhNr4vdnWnI47AEEzNftRAqzkMGO0",
   telegramBotUsername: "pkascent_bot",
@@ -283,13 +287,37 @@ function createFallbackStore(options = {}) {
     },
     async saveSettings(input) {
       if (!input || typeof input !== "object" || Array.isArray(input)) throw problem("Settings must be an object.");
-      const projectName = typeof input.projectName === "string" ? input.projectName.trim() : "";
+      const current = await this.getSettings();
+
+      const projectName = typeof input.projectName === "string" && input.projectName.trim()
+        ? input.projectName.trim()
+        : (input.projectName !== undefined ? "" : current.projectName);
       const subtitle = typeof input.subtitle === "string"
         ? input.subtitle.trim()
-        : (input.subtitle !== undefined ? "" : DEFAULT_SETTINGS.subtitle);
-      const logo = typeof input.logo === "string" ? input.logo.trim() : "";
-      const footTag = typeof input.footTag === "string" ? input.footTag.trim() : "";
-      const defaultWebsite = input.defaultWebsite === "foodpanda" ? "foodpanda" : "fragrantica";
+        : (input.subtitle !== undefined ? "" : (current.subtitle || DEFAULT_SETTINGS.subtitle));
+      const logo = typeof input.logo === "string" && input.logo.trim()
+        ? input.logo.trim()
+        : (input.logo !== undefined ? "" : current.logo);
+      const footTag = typeof input.footTag === "string" && input.footTag.trim()
+        ? input.footTag.trim()
+        : (input.footTag !== undefined ? "" : current.footTag);
+
+      const heroSubheading = typeof input.heroSubheading === "string"
+        ? input.heroSubheading.trim()
+        : (input.heroSubheading !== undefined ? "" : (current.heroSubheading || DEFAULT_SETTINGS.heroSubheading));
+      const heroTitle = typeof input.heroTitle === "string"
+        ? input.heroTitle.trim()
+        : (input.heroTitle !== undefined ? "" : (current.heroTitle || DEFAULT_SETTINGS.heroTitle));
+      const heroText = typeof input.heroText === "string"
+        ? input.heroText.trim()
+        : (input.heroText !== undefined ? "" : (current.heroText || DEFAULT_SETTINGS.heroText));
+      const heroBackground = typeof input.heroBackground === "string" && input.heroBackground.trim()
+        ? input.heroBackground.trim()
+        : (input.heroBackground !== undefined ? "" : (current.heroBackground || DEFAULT_SETTINGS.heroBackground));
+
+      const defaultWebsite = input.defaultWebsite === "foodpanda"
+        ? "foodpanda"
+        : (input.defaultWebsite === "fragrantica" ? "fragrantica" : current.defaultWebsite);
 
       if (!projectName) throw problem("Project name is required.");
       if (projectName.length > 100) throw problem("Project name is too long (max 100 characters).");
@@ -298,29 +326,41 @@ function createFallbackStore(options = {}) {
       if (logo.length > 5000000) throw problem("Logo is too long (max 5MB).");
       if (!footTag) throw problem("Foot tag is required.");
       if (footTag.length > 500) throw problem("Foot tag is too long (max 500 characters).");
+      if (heroSubheading.length > 200) throw problem("Hero subheading is too long (max 200 characters).");
+      if (heroTitle.length > 200) throw problem("Hero title is too long (max 200 characters).");
+      if (heroText.length > 1000) throw problem("Hero text is too long (max 1000 characters).");
+      if (heroBackground.length > 5000000) throw problem("Hero background is too long (max 5MB).");
 
       const telegramBotToken = typeof input.telegramBotToken === "string" && input.telegramBotToken.trim()
         ? input.telegramBotToken.trim()
-        : DEFAULT_SETTINGS.telegramBotToken;
+        : current.telegramBotToken;
       const telegramBotUsername = typeof input.telegramBotUsername === "string" && input.telegramBotUsername.trim()
         ? input.telegramBotUsername.trim().replace(/^@/, "")
-        : DEFAULT_SETTINGS.telegramBotUsername;
+        : current.telegramBotUsername;
       const rawContact = typeof input.telegramContact === "string" && input.telegramContact.trim()
         ? input.telegramContact.trim()
-        : (typeof input.telegramChatId === "string" && input.telegramChatId.trim() ? input.telegramChatId.trim() : DEFAULT_SETTINGS.telegramContact);
+        : (typeof input.telegramChatId === "string" && input.telegramChatId.trim() ? input.telegramChatId.trim() : current.telegramContact);
       const telegramContact = rawContact;
       const telegramChatId = rawContact;
-      const telegramBotEnabled = input.telegramBotEnabled === "false" || input.telegramBotEnabled === false ? "false" : "true";
-      const telegramContactEnabled = input.telegramContactEnabled === "false" || input.telegramContactEnabled === false ? "false" : "true";
+      const telegramBotEnabled = input.telegramBotEnabled !== undefined
+        ? (input.telegramBotEnabled === "false" || input.telegramBotEnabled === false ? "false" : "true")
+        : current.telegramBotEnabled;
+      const telegramContactEnabled = input.telegramContactEnabled !== undefined
+        ? (input.telegramContactEnabled === "false" || input.telegramContactEnabled === false ? "false" : "true")
+        : current.telegramContactEnabled;
       const telegramContactText = typeof input.telegramContactText === "string" && input.telegramContactText.trim()
         ? input.telegramContactText.trim()
-        : DEFAULT_SETTINGS.telegramContactText;
+        : current.telegramContactText;
 
       const sanitized = {
         projectName,
         subtitle,
         logo,
         footTag,
+        heroSubheading,
+        heroTitle,
+        heroText,
+        heroBackground,
         defaultWebsite,
         telegramBotToken,
         telegramBotUsername,
@@ -631,13 +671,37 @@ async function createStore(options = {}) {
     },
     async saveSettings(input) {
       if (!input || typeof input !== "object" || Array.isArray(input)) throw problem("Settings must be an object.");
-      const projectName = typeof input.projectName === "string" ? input.projectName.trim() : "";
+      const current = await this.getSettings();
+
+      const projectName = typeof input.projectName === "string" && input.projectName.trim()
+        ? input.projectName.trim()
+        : (input.projectName !== undefined ? "" : current.projectName);
       const subtitle = typeof input.subtitle === "string"
         ? input.subtitle.trim()
-        : (input.subtitle !== undefined ? "" : DEFAULT_SETTINGS.subtitle);
-      const logo = typeof input.logo === "string" ? input.logo.trim() : "";
-      const footTag = typeof input.footTag === "string" ? input.footTag.trim() : "";
-      const defaultWebsite = input.defaultWebsite === "foodpanda" ? "foodpanda" : "fragrantica";
+        : (input.subtitle !== undefined ? "" : (current.subtitle || DEFAULT_SETTINGS.subtitle));
+      const logo = typeof input.logo === "string" && input.logo.trim()
+        ? input.logo.trim()
+        : (input.logo !== undefined ? "" : current.logo);
+      const footTag = typeof input.footTag === "string" && input.footTag.trim()
+        ? input.footTag.trim()
+        : (input.footTag !== undefined ? "" : current.footTag);
+
+      const heroSubheading = typeof input.heroSubheading === "string"
+        ? input.heroSubheading.trim()
+        : (input.heroSubheading !== undefined ? "" : (current.heroSubheading || DEFAULT_SETTINGS.heroSubheading));
+      const heroTitle = typeof input.heroTitle === "string"
+        ? input.heroTitle.trim()
+        : (input.heroTitle !== undefined ? "" : (current.heroTitle || DEFAULT_SETTINGS.heroTitle));
+      const heroText = typeof input.heroText === "string"
+        ? input.heroText.trim()
+        : (input.heroText !== undefined ? "" : (current.heroText || DEFAULT_SETTINGS.heroText));
+      const heroBackground = typeof input.heroBackground === "string" && input.heroBackground.trim()
+        ? input.heroBackground.trim()
+        : (input.heroBackground !== undefined ? "" : (current.heroBackground || DEFAULT_SETTINGS.heroBackground));
+
+      const defaultWebsite = input.defaultWebsite === "foodpanda"
+        ? "foodpanda"
+        : (input.defaultWebsite === "fragrantica" ? "fragrantica" : current.defaultWebsite);
 
       if (!projectName) throw problem("Project name is required.");
       if (projectName.length > 100) throw problem("Project name is too long (max 100 characters).");
@@ -646,29 +710,41 @@ async function createStore(options = {}) {
       if (logo.length > 5000000) throw problem("Logo is too long (max 5MB).");
       if (!footTag) throw problem("Foot tag is required.");
       if (footTag.length > 500) throw problem("Foot tag is too long (max 500 characters).");
+      if (heroSubheading.length > 200) throw problem("Hero subheading is too long (max 200 characters).");
+      if (heroTitle.length > 200) throw problem("Hero title is too long (max 200 characters).");
+      if (heroText.length > 1000) throw problem("Hero text is too long (max 1000 characters).");
+      if (heroBackground.length > 5000000) throw problem("Hero background is too long (max 5MB).");
 
       const telegramBotToken = typeof input.telegramBotToken === "string" && input.telegramBotToken.trim()
         ? input.telegramBotToken.trim()
-        : DEFAULT_SETTINGS.telegramBotToken;
+        : current.telegramBotToken;
       const telegramBotUsername = typeof input.telegramBotUsername === "string" && input.telegramBotUsername.trim()
         ? input.telegramBotUsername.trim().replace(/^@/, "")
-        : DEFAULT_SETTINGS.telegramBotUsername;
+        : current.telegramBotUsername;
       const rawContact = typeof input.telegramContact === "string" && input.telegramContact.trim()
         ? input.telegramContact.trim()
-        : (typeof input.telegramChatId === "string" && input.telegramChatId.trim() ? input.telegramChatId.trim() : DEFAULT_SETTINGS.telegramContact);
+        : (typeof input.telegramChatId === "string" && input.telegramChatId.trim() ? input.telegramChatId.trim() : current.telegramContact);
       const telegramContact = rawContact;
       const telegramChatId = rawContact;
-      const telegramBotEnabled = input.telegramBotEnabled === "false" || input.telegramBotEnabled === false ? "false" : "true";
-      const telegramContactEnabled = input.telegramContactEnabled === "false" || input.telegramContactEnabled === false ? "false" : "true";
+      const telegramBotEnabled = input.telegramBotEnabled !== undefined
+        ? (input.telegramBotEnabled === "false" || input.telegramBotEnabled === false ? "false" : "true")
+        : current.telegramBotEnabled;
+      const telegramContactEnabled = input.telegramContactEnabled !== undefined
+        ? (input.telegramContactEnabled === "false" || input.telegramContactEnabled === false ? "false" : "true")
+        : current.telegramContactEnabled;
       const telegramContactText = typeof input.telegramContactText === "string" && input.telegramContactText.trim()
         ? input.telegramContactText.trim()
-        : DEFAULT_SETTINGS.telegramContactText;
+        : current.telegramContactText;
 
       const sanitized = {
         projectName,
         subtitle,
         logo,
         footTag,
+        heroSubheading,
+        heroTitle,
+        heroText,
+        heroBackground,
         defaultWebsite,
         telegramBotToken,
         telegramBotUsername,

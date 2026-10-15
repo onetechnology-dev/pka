@@ -70,6 +70,32 @@ const tagDeselectAllBtn = document.querySelector("#tagDeselectAllBtn");
 const tagEditorError = document.querySelector("#tagEditorError");
 const saveTagBtn = document.querySelector("#saveTagBtn");
 
+const websiteBioBtn = document.querySelector("#websiteBioBtn");
+const websiteBioDialog = document.querySelector("#websiteBioDialog");
+const websiteBioForm = document.querySelector("#websiteBioForm");
+const closeWebsiteBioBtn = document.querySelector("#closeWebsiteBioBtn");
+const cancelWebsiteBioBtn = document.querySelector("#cancelWebsiteBioBtn");
+const saveWebsiteBioBtn = document.querySelector("#saveWebsiteBioBtn");
+const websiteBioStatusMsg = document.querySelector("#websiteBioStatusMsg");
+
+const settingHeroSubheading = document.querySelector("#settingHeroSubheading");
+const settingHeroTitle = document.querySelector("#settingHeroTitle");
+const settingHeroText = document.querySelector("#settingHeroText");
+const settingHeroBackground = document.querySelector("#settingHeroBackground");
+const heroBgDropzone = document.querySelector("#heroBgDropzone");
+const heroBgFileInput = document.querySelector("#heroBgFileInput");
+const heroBgUploadInfo = document.querySelector("#heroBgUploadInfo");
+const heroBgUploadName = document.querySelector("#heroBgUploadName");
+const heroBgClearUploadBtn = document.querySelector("#heroBgClearUploadBtn");
+const heroLivePreview = document.querySelector("#heroLivePreview");
+const previewHeroSubheading = document.querySelector("#previewHeroSubheading");
+const previewHeroTitle = document.querySelector("#previewHeroTitle");
+const previewHeroText = document.querySelector("#previewHeroText");
+
+const heroSubheadingEl = document.querySelector("#heroSubheading, .hero-subheading");
+const heroTitleEl = document.querySelector("#heroTitle, .storefront-hero h2");
+const heroTextEl = document.querySelector("#heroText, .storefront-hero p");
+
 const openSettingsBtn = document.querySelector("#openSettingsBtn");
 const adminSettingsBtn = document.querySelector("#adminSettingsBtn");
 const settingsDialog = document.querySelector("#settingsDialog");
@@ -168,6 +194,10 @@ const DEFAULT_SETTINGS = {
   subtitle: "Luxury Fragrance Collection",
   logo: "⚜️",
   footTag: "HAUTE PARFUMERIE • PKA SCENT — Exclusive Fragrance Discovery & Scraper Portal",
+  heroSubheading: "HAUTE PARFUMERIE • PKA SCENT",
+  heroTitle: "Exclusive Scent Discovery",
+  heroText: "Explore luxury olfactory pyramids, vibrant main accords, and signature designer perfumes.",
+  heroBackground: "/header-bg.png",
   defaultWebsite: "fragrantica",
   telegramBotToken: "8670278807:AAGODQKhNr4vdnWnI47AEEzNftRAqzkMGO0",
   telegramBotUsername: "pkascent_bot",
@@ -1874,6 +1904,10 @@ function applySettings(settings) {
     subtitle: String(settings.subtitle !== undefined ? settings.subtitle : DEFAULT_SETTINGS.subtitle).trim(),
     logo: String(settings.logo || DEFAULT_SETTINGS.logo).trim(),
     footTag: String(settings.footTag || DEFAULT_SETTINGS.footTag).trim(),
+    heroSubheading: String(settings.heroSubheading !== undefined ? settings.heroSubheading : DEFAULT_SETTINGS.heroSubheading).trim(),
+    heroTitle: String(settings.heroTitle !== undefined ? settings.heroTitle : DEFAULT_SETTINGS.heroTitle).trim(),
+    heroText: String(settings.heroText !== undefined ? settings.heroText : DEFAULT_SETTINGS.heroText).trim(),
+    heroBackground: String(settings.heroBackground !== undefined ? settings.heroBackground : DEFAULT_SETTINGS.heroBackground).trim(),
     defaultWebsite: settings.defaultWebsite === "foodpanda" ? "foodpanda" : "fragrantica",
     telegramBotToken: String(settings.telegramBotToken || DEFAULT_SETTINGS.telegramBotToken).trim(),
     telegramBotUsername: String(settings.telegramBotUsername || DEFAULT_SETTINGS.telegramBotUsername).trim(),
@@ -1892,9 +1926,18 @@ function applySettings(settings) {
   if (viewFrontendText) viewFrontendText.textContent = `Frontend (${currentSettings.projectName})`;
   if (footerProjectName) footerProjectName.textContent = currentSettings.projectName;
 
-  const heroSubheading = document.querySelector(".hero-subheading");
-  if (heroSubheading) {
-    heroSubheading.textContent = `HAUTE PARFUMERIE • ${currentSettings.projectName.toUpperCase()}`;
+  if (heroSubheadingEl) {
+    heroSubheadingEl.textContent = currentSettings.heroSubheading || `HAUTE PARFUMERIE • ${currentSettings.projectName.toUpperCase()}`;
+  }
+  if (heroTitleEl) {
+    heroTitleEl.textContent = currentSettings.heroTitle || DEFAULT_SETTINGS.heroTitle;
+  }
+  if (heroTextEl) {
+    heroTextEl.textContent = currentSettings.heroText || DEFAULT_SETTINGS.heroText;
+  }
+  if (storefrontHero) {
+    const bgUrl = currentSettings.heroBackground || DEFAULT_SETTINGS.heroBackground || "/header-bg.png";
+    storefrontHero.style.backgroundImage = `linear-gradient(90deg, rgba(20, 5, 16, 0.90) 0%, rgba(20, 5, 16, 0.76) 52%, rgba(15, 4, 12, 0.52) 100%), url('${bgUrl}')`;
   }
 
   if (footerTag) footerTag.textContent = currentSettings.footTag;
@@ -1907,6 +1950,11 @@ function applySettings(settings) {
   if (settingSubtitle) settingSubtitle.value = currentSettings.subtitle || DEFAULT_SETTINGS.subtitle;
   if (settingLogo) settingLogo.value = currentSettings.logo;
   if (settingFootTag) settingFootTag.value = currentSettings.footTag;
+  if (settingHeroSubheading) settingHeroSubheading.value = currentSettings.heroSubheading || DEFAULT_SETTINGS.heroSubheading;
+  if (settingHeroTitle) settingHeroTitle.value = currentSettings.heroTitle || DEFAULT_SETTINGS.heroTitle;
+  if (settingHeroText) settingHeroText.value = currentSettings.heroText || DEFAULT_SETTINGS.heroText;
+  if (settingHeroBackground) settingHeroBackground.value = currentSettings.heroBackground || DEFAULT_SETTINGS.heroBackground;
+
   if (settingDefaultWebsite) settingDefaultWebsite.value = currentSettings.defaultWebsite;
   if (settingTelegramBotToken) settingTelegramBotToken.value = currentSettings.telegramBotToken;
   if (settingTelegramBotUsername) settingTelegramBotUsername.value = currentSettings.telegramBotUsername;
@@ -1924,6 +1972,7 @@ function applySettings(settings) {
     updateSourceView();
   }
   updateLogoPreview(currentSettings.logo);
+  updateHeroPreview();
 }
 
 async function loadSavedSettings() {
@@ -1946,25 +1995,34 @@ async function loadSavedSettings() {
   } catch (_) {}
 }
 
-function openSettingsModal() {
-  if (!settingsDialog) return;
+function updateHeroPreview() {
+  const sub = settingHeroSubheading?.value.trim() || currentSettings.heroSubheading || DEFAULT_SETTINGS.heroSubheading;
+  const title = settingHeroTitle?.value.trim() || currentSettings.heroTitle || DEFAULT_SETTINGS.heroTitle;
+  const text = settingHeroText?.value.trim() || currentSettings.heroText || DEFAULT_SETTINGS.heroText;
+  const bg = settingHeroBackground?.value.trim() || currentSettings.heroBackground || DEFAULT_SETTINGS.heroBackground;
+
+  if (previewHeroSubheading) previewHeroSubheading.textContent = sub;
+  if (previewHeroTitle) previewHeroTitle.textContent = title;
+  if (previewHeroText) previewHeroText.textContent = text;
+  if (heroLivePreview) {
+    heroLivePreview.style.backgroundImage = `linear-gradient(90deg, rgba(20, 5, 16, 0.90) 0%, rgba(20, 5, 16, 0.76) 52%, rgba(15, 4, 12, 0.52) 100%), url('${bg}')`;
+  }
+}
+
+function openWebsiteBioModal() {
+  if (!websiteBioDialog) return;
   if (settingProjectName) settingProjectName.value = currentSettings.projectName;
   if (settingSubtitle) settingSubtitle.value = currentSettings.subtitle || DEFAULT_SETTINGS.subtitle;
   if (settingLogo) settingLogo.value = currentSettings.logo;
   if (settingFootTag) settingFootTag.value = currentSettings.footTag;
-  if (settingDefaultWebsite) settingDefaultWebsite.value = currentSettings.defaultWebsite;
-  if (settingTelegramBotToken) settingTelegramBotToken.value = currentSettings.telegramBotToken;
-  if (settingTelegramBotUsername) settingTelegramBotUsername.value = currentSettings.telegramBotUsername;
-  if (settingTelegramChatId) settingTelegramChatId.value = currentSettings.telegramContact || currentSettings.telegramChatId || "+85510666813";
-  if (settingTelegramBotEnabled) settingTelegramBotEnabled.checked = currentSettings.telegramBotEnabled !== "false";
-  if (settingTelegramContact) settingTelegramContact.value = currentSettings.telegramContact || currentSettings.telegramChatId || "+85510666813";
-  if (settingTelegramContactEnabled) settingTelegramContactEnabled.checked = currentSettings.telegramContactEnabled !== "false";
-  if (settingTelegramContactText) settingTelegramContactText.value = currentSettings.telegramContactText;
-  updateTelegramBotUI();
-  updateTelegramContactUI();
-  updateTelegramContactWidget();
-  if (telegramFeedbackMsg) telegramFeedbackMsg.hidden = true;
+
+  if (settingHeroSubheading) settingHeroSubheading.value = currentSettings.heroSubheading || DEFAULT_SETTINGS.heroSubheading;
+  if (settingHeroTitle) settingHeroTitle.value = currentSettings.heroTitle || DEFAULT_SETTINGS.heroTitle;
+  if (settingHeroText) settingHeroText.value = currentSettings.heroText || DEFAULT_SETTINGS.heroText;
+  if (settingHeroBackground) settingHeroBackground.value = currentSettings.heroBackground || DEFAULT_SETTINGS.heroBackground;
+
   updateLogoPreview(currentSettings.logo);
+  updateHeroPreview();
 
   if (currentSettings.logo && (currentSettings.logo.startsWith("/uploads/") || currentSettings.logo.startsWith("data:image/"))) {
     if (logoUploadInfo) {
@@ -1977,6 +2035,50 @@ function openSettingsModal() {
   } else {
     if (logoUploadInfo) logoUploadInfo.hidden = true;
   }
+
+  if (currentSettings.heroBackground && currentSettings.heroBackground.startsWith("/uploads/")) {
+    if (heroBgUploadInfo) {
+      heroBgUploadInfo.hidden = false;
+      const displayFilename = currentSettings.heroBackground.split("/").pop();
+      if (heroBgUploadName) heroBgUploadName.textContent = `${displayFilename} (Active)`;
+    }
+  } else {
+    if (heroBgUploadInfo) heroBgUploadInfo.hidden = true;
+  }
+
+  if (websiteBioStatusMsg) {
+    websiteBioStatusMsg.hidden = true;
+    websiteBioStatusMsg.textContent = "";
+    websiteBioStatusMsg.className = "settings-status-msg";
+  }
+  websiteBioDialog.showModal();
+}
+
+function closeWebsiteBioModal() {
+  if (websiteBioDialog && websiteBioDialog.open) websiteBioDialog.close();
+}
+
+websiteBioBtn?.addEventListener("click", () => {
+  closeSidebar();
+  openWebsiteBioModal();
+});
+closeWebsiteBioBtn?.addEventListener("click", closeWebsiteBioModal);
+cancelWebsiteBioBtn?.addEventListener("click", closeWebsiteBioModal);
+
+function openSettingsModal() {
+  if (!settingsDialog) return;
+  if (settingDefaultWebsite) settingDefaultWebsite.value = currentSettings.defaultWebsite;
+  if (settingTelegramBotToken) settingTelegramBotToken.value = currentSettings.telegramBotToken;
+  if (settingTelegramBotUsername) settingTelegramBotUsername.value = currentSettings.telegramBotUsername;
+  if (settingTelegramChatId) settingTelegramChatId.value = currentSettings.telegramContact || currentSettings.telegramChatId || "+85510666813";
+  if (settingTelegramBotEnabled) settingTelegramBotEnabled.checked = currentSettings.telegramBotEnabled !== "false";
+  if (settingTelegramContact) settingTelegramContact.value = currentSettings.telegramContact || currentSettings.telegramChatId || "+85510666813";
+  if (settingTelegramContactEnabled) settingTelegramContactEnabled.checked = currentSettings.telegramContactEnabled !== "false";
+  if (settingTelegramContactText) settingTelegramContactText.value = currentSettings.telegramContactText;
+  updateTelegramBotUI();
+  updateTelegramContactUI();
+  updateTelegramContactWidget();
+  if (telegramFeedbackMsg) telegramFeedbackMsg.hidden = true;
 
   if (settingsStatusMsg) {
     settingsStatusMsg.hidden = true;
@@ -2219,6 +2321,159 @@ document.querySelectorAll(".preset-pill").forEach((btn) => {
   });
 });
 
+async function handleHeroBgFile(file) {
+  if (!file) return;
+
+  const isImage = file.type?.startsWith("image/") || /\.(png|jpe?g|webp|svg|gif)$/i.test(file.name);
+  if (!isImage) {
+    if (websiteBioStatusMsg) {
+      websiteBioStatusMsg.textContent = "Please select a valid image file (PNG, JPG, WebP, SVG, GIF).";
+      websiteBioStatusMsg.className = "settings-status-msg error";
+      websiteBioStatusMsg.hidden = false;
+    }
+    return;
+  }
+
+  if (websiteBioStatusMsg) {
+    websiteBioStatusMsg.hidden = true;
+    websiteBioStatusMsg.textContent = "";
+  }
+
+  if (heroBgUploadInfo) {
+    heroBgUploadInfo.hidden = false;
+    if (heroBgUploadName) heroBgUploadName.textContent = `Uploading ${file.name}...`;
+  }
+
+  const reader = new FileReader();
+  reader.onerror = () => {
+    if (heroBgUploadInfo) heroBgUploadInfo.hidden = true;
+    if (websiteBioStatusMsg) {
+      websiteBioStatusMsg.textContent = "Could not read the selected image file.";
+      websiteBioStatusMsg.className = "settings-status-msg error";
+      websiteBioStatusMsg.hidden = false;
+    }
+  };
+
+  reader.onload = async () => {
+    const dataUrl = reader.result;
+    try {
+      const response = await fetch("/api/upload-hero-bg", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ data: dataUrl, name: file.name }),
+      });
+      const payload = await response.json();
+      if (!response.ok) throw new Error(payload.error || "Upload failed");
+
+      if (settingHeroBackground) settingHeroBackground.value = payload.url;
+      if (heroBgUploadInfo) heroBgUploadInfo.hidden = false;
+      if (heroBgUploadName) heroBgUploadName.textContent = file.name;
+      updateHeroPreview();
+    } catch (err) {
+      if (settingHeroBackground) settingHeroBackground.value = dataUrl;
+      if (heroBgUploadInfo) heroBgUploadInfo.hidden = false;
+      if (heroBgUploadName) heroBgUploadName.textContent = `${file.name} (Embedded)`;
+      updateHeroPreview();
+    }
+  };
+  reader.readAsDataURL(file);
+}
+
+heroBgDropzone?.addEventListener("click", () => heroBgFileInput?.click());
+heroBgDropzone?.addEventListener("keydown", (e) => {
+  if (e.key === "Enter" || e.key === " ") {
+    e.preventDefault();
+    heroBgFileInput?.click();
+  }
+});
+heroBgFileInput?.addEventListener("change", (e) => {
+  const file = e.target.files?.[0];
+  if (file) handleHeroBgFile(file);
+});
+
+[heroBgDropzone, heroLivePreview].forEach((zone) => {
+  if (!zone) return;
+  ["dragenter", "dragover"].forEach((evtName) => {
+    zone.addEventListener(evtName, (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      zone.classList.add("drag-active");
+    });
+  });
+  ["dragleave", "dragend"].forEach((evtName) => {
+    zone.addEventListener(evtName, (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      zone.classList.remove("drag-active");
+    });
+  });
+  zone.addEventListener("drop", (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    zone.classList.remove("drag-active");
+    const file = e.dataTransfer?.files?.[0];
+    if (file) handleHeroBgFile(file);
+  });
+});
+
+heroBgClearUploadBtn?.addEventListener("click", () => {
+  if (heroBgUploadInfo) heroBgUploadInfo.hidden = true;
+  if (heroBgFileInput) heroBgFileInput.value = "";
+  if (settingHeroBackground) {
+    settingHeroBackground.value = "/header-bg.png";
+    updateHeroPreview();
+  }
+});
+
+[settingHeroSubheading, settingHeroTitle, settingHeroText, settingHeroBackground].forEach((input) => {
+  input?.addEventListener("input", updateHeroPreview);
+});
+
+websiteBioForm?.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  if (saveWebsiteBioBtn) saveWebsiteBioBtn.disabled = true;
+  if (websiteBioStatusMsg) websiteBioStatusMsg.hidden = true;
+
+  try {
+    const formData = new FormData(websiteBioForm);
+    const newBioSettings = {
+      projectName: String(formData.get("projectName") || "").trim(),
+      subtitle: String(formData.get("subtitle") || "").trim(),
+      logo: String(formData.get("logo") || "").trim(),
+      footTag: String(formData.get("footTag") || "").trim(),
+      heroSubheading: String(formData.get("heroSubheading") || "").trim(),
+      heroTitle: String(formData.get("heroTitle") || "").trim(),
+      heroText: String(formData.get("heroText") || "").trim(),
+      heroBackground: String(formData.get("heroBackground") || "").trim(),
+    };
+
+    if (!newBioSettings.projectName) throw new Error("Project name is required.");
+    if (!newBioSettings.logo) throw new Error("Logo is required.");
+    if (!newBioSettings.footTag) throw new Error("Foot tag is required.");
+
+    const response = await fetch("/api/settings", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(newBioSettings),
+    });
+    const payload = await response.json();
+    if (!response.ok) throw new Error(payload.error || "Could not save website bio.");
+
+    applySettings(payload.settings || newBioSettings);
+    try { localStorage.setItem("pka_settings", JSON.stringify(payload.settings || newBioSettings)); } catch (_) {}
+    setStatus("Website Bio saved successfully");
+    closeWebsiteBioModal();
+  } catch (err) {
+    if (websiteBioStatusMsg) {
+      websiteBioStatusMsg.textContent = err.message || "Failed to save website bio.";
+      websiteBioStatusMsg.className = "settings-status-msg error";
+      websiteBioStatusMsg.hidden = false;
+    }
+  } finally {
+    if (saveWebsiteBioBtn) saveWebsiteBioBtn.disabled = false;
+  }
+});
+
 settingsForm?.addEventListener("submit", async (e) => {
   e.preventDefault();
   if (saveSettingsBtn) saveSettingsBtn.disabled = true;
@@ -2227,10 +2482,10 @@ settingsForm?.addEventListener("submit", async (e) => {
   try {
     const formData = new FormData(settingsForm);
     const newSettings = {
-      projectName: String(formData.get("projectName") || "").trim(),
-      subtitle: String(formData.get("subtitle") || "").trim(),
-      logo: String(formData.get("logo") || "").trim(),
-      footTag: String(formData.get("footTag") || "").trim(),
+      projectName: String(formData.get("projectName") || currentSettings.projectName).trim(),
+      subtitle: String(formData.get("subtitle") !== null ? (formData.get("subtitle") || "") : (currentSettings.subtitle || "")).trim(),
+      logo: String(formData.get("logo") || currentSettings.logo).trim(),
+      footTag: String(formData.get("footTag") || currentSettings.footTag).trim(),
       defaultWebsite: formData.get("defaultWebsite") === "foodpanda" ? "foodpanda" : "fragrantica",
       telegramBotToken: String(formData.get("telegramBotToken") || "").trim(),
       telegramBotUsername: String(formData.get("telegramBotUsername") || "").trim().replace(/^@/, ""),
@@ -2259,7 +2514,7 @@ settingsForm?.addEventListener("submit", async (e) => {
     closeSettingsModal();
   } catch (err) {
     if (settingsStatusMsg) {
-      settingsStatusMsg.textContent = err.message;
+      settingsStatusMsg.textContent = err.message || "Failed to save settings.";
       settingsStatusMsg.className = "settings-status-msg error";
       settingsStatusMsg.hidden = false;
     }

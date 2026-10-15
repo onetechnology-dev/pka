@@ -104,10 +104,9 @@ test("UI opens settings dialog, changes logo, project name, foot tag, and persis
     assert.equal(await page.locator("#footerTag").textContent(), DEFAULT_SETTINGS.footTag);
     assert.equal(await page.locator("#footerProjectName").textContent(), "PKA SCENT");
 
-    // Open settings dialog via sidebar admin settings button
-    await page.locator("#adminSettingsBtn").click();
-    assert.equal(await page.locator("#settingsDialog").isVisible(), true);
-    assert.equal(await page.locator("#settingDefaultWebsite").inputValue(), "fragrantica");
+    // Open Website Bio dialog via sidebar nav button
+    await page.locator("#websiteBioBtn").click();
+    assert.equal(await page.locator("#websiteBioDialog").isVisible(), true);
 
     // Fill new project name, logo symbol via preset, and foot tag
     await page.locator("#settingProjectName").fill("PARFUM MAJESTY");
@@ -116,11 +115,17 @@ test("UI opens settings dialog, changes logo, project name, foot tag, and persis
     assert.equal(await page.locator("#logoPreviewCrest .crest-symbol").textContent(), "👑");
 
     await page.locator("#settingFootTag").fill("MAJESTY LUXURY COLLECTION • COPYRIGHT 2026");
-    await page.locator("#settingDefaultWebsite").selectOption("foodpanda");
 
-    // Submit form
-    await page.locator("#saveSettingsBtn").click();
+    // Save Website Bio
+    await page.locator("#saveWebsiteBioBtn").click();
     await page.waitForFunction(() => document.querySelector("h1.brand-title").textContent === "PARFUM MAJESTY");
+
+    // Open settings dialog via sidebar admin settings button
+    await page.locator("#adminSettingsBtn").click();
+    assert.equal(await page.locator("#settingsDialog").isVisible(), true);
+    assert.equal(await page.locator("#settingDefaultWebsite").inputValue(), "fragrantica");
+    await page.locator("#settingDefaultWebsite").selectOption("foodpanda");
+    await page.locator("#saveSettingsBtn").click();
 
     // Verify UI updates
     assert.equal(await page.locator("h1.brand-title").textContent(), "PARFUM MAJESTY");
