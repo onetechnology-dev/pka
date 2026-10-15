@@ -349,11 +349,12 @@ h2 {
 .url-field small { color: var(--muted); font-size: 11px; }
 .product-status { display: inline-block; border-radius: 999px; padding: 5px 10px; font-size: 12px; font-weight: 700; }
 .product-status.active { color: #11634d; background: #e2f3eb; }
-.product-status.deactive { color: #6c5666; background: #eee7ec; }
-.product-actions { display: flex; flex-wrap: wrap; gap: 8px; }
-.product-actions button { padding: 7px 9px; border: 1px solid var(--border); background: white; border-radius: 5px; color: #354458; }
+.product-actions { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.product-actions button { padding: 6px 9px; border: 1px solid var(--border); background: white; border-radius: 5px; color: #354458; cursor: pointer; transition: all 0.15s ease; }
+.product-actions .action-icon-btn { font-size: 14px; line-height: 1; min-width: 32px; min-height: 30px; display: inline-flex; align-items: center; justify-content: center; }
+.product-actions .action-icon-btn:hover { transform: translateY(-1px); }
 .product-actions .delete-product { color: #a52343; }
-.card-actions { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 28px; border-bottom: 1px solid #f0edf0; }
+.product-actions .delete-product:hover { background: #fee2e2; border-color: #ef4444; }
 .fragrance-table .status-column { width: 100px; }
 .fragrance-table .action-column { width: 150px; }
 dialog { width: min(760px, calc(100vw - 24px)); max-height: 90vh; overflow: auto; padding: 24px; border: 1px solid var(--border); border-radius: 12px; color: var(--ink); }
@@ -2100,7 +2101,9 @@ body.mode-frontend .product-status,
 body.mode-frontend .card-actions,
 body.mode-frontend #toolbarHeading,
 body.mode-frontend #viewControls,
-body.mode-frontend .view-switch {
+body.mode-frontend .view-switch,
+body.mode-frontend .sort-control-wrap,
+body.mode-frontend #sortControlWrap {
   display: none !important;
 }
 
@@ -3461,13 +3464,51 @@ body.mode-frontend .product-tag-badge {
   width: 22%;
 }
 
+.th-tag-filter {
+  width: 14%;
+  text-align: center;
+}
+
 .th-perfume-names {
-  width: 58%;
+  width: 44%;
 }
 
 .th-tag-actions {
   width: 20%;
   text-align: right;
+}
+
+.tag-filter-cell {
+  text-align: center;
+}
+
+.filter-status-pill {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.filter-status-pill.true {
+  background: rgba(16, 185, 129, 0.18);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.35);
+}
+
+.filter-status-pill.false {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.frontend-tag-filters {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
 }
 
 .tag-name-cell {

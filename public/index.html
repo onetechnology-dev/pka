@@ -271,6 +271,7 @@
                   <span class="chip-label">ស្រី/ប្រុស</span><span class="filter-count" id="countUnisex">(0)</span>
                 </label>
               </div>
+              <div class="frontend-tag-filters" id="frontendTagFilters" role="group" aria-label="Filter by tags"></div>
               <div class="sort-control-wrap" id="sortControlWrap">
                 <label class="sort-label" for="sortSelect">
                   <span class="sort-icon" aria-hidden="true">⇅</span>
@@ -752,7 +753,8 @@
             <tbody id="tagTableHeader">
               <tr class="tag-table-header-row">
                 <th class="th-tag-name">Tag Name</th>
-                <th class="th-perfume-names">Perfume Names (Product Name)</th>
+                <th class="th-tag-filter">Filter</th>
+                <th class="th-perfume-names">Perfume Names</th>
                 <th class="th-tag-actions">Action</th>
               </tr>
             </tbody>
@@ -796,9 +798,21 @@
         </div>
 
         <div class="tag-field-group">
+          <label class="setting-label" for="tagFilterInput">
+            <span>Filter</span>
+            <small>Show as filter on frontend (true: show, false: hide)</small>
+          </label>
+          <label class="switch">
+            <input id="tagFilterInput" name="tagFilter" type="checkbox" checked />
+            <span class="switch-track" aria-hidden="true"></span>
+            <span id="tagFilterStatusLabel">true</span>
+          </label>
+        </div>
+
+        <div class="tag-field-group">
           <div class="picker-header-row">
             <label class="setting-label">
-              <span>Perfume Names (Product Name)</span>
+              <span>Perfume Names</span>
               <small>Select multiple perfumes to apply this tag</small>
             </label>
             <div class="picker-quick-actions">

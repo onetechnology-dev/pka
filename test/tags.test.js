@@ -21,19 +21,22 @@ test("index.html contains tagSettingsBtn in sidebar directly below addProductBtn
   assert.match(html, /id="addProductBtn"[\s\S]*?id="tagSettingsBtn"/);
 });
 
-test("index.html contains tagSettingsDialog with Tag Name, Perfume Names, and Action columns", () => {
+test("index.html contains tagSettingsDialog with Tag Name, Filter, Perfume Names, and Action columns", () => {
   const html = fs.readFileSync(path.join(__dirname, "../public/index.html"), "utf8");
   assert.match(html, /id="tagSettingsDialog"/);
   assert.match(html, /id="tagManagementTable"/);
   assert.match(html, /Tag Name/);
+  assert.match(html, /Filter/);
   assert.match(html, /Perfume Names/);
+  assert.doesNotMatch(html, /Perfume Names \(Product Name\)/);
   assert.match(html, /Action/);
 });
 
-test("index.html contains tagEditorModal popup with multi-select and default tag 'ក្លិនពេញនិយម'", () => {
+test("index.html contains tagEditorModal popup with multi-select, Filter input, and default tag 'ក្លិនពេញនិយម'", () => {
   const html = fs.readFileSync(path.join(__dirname, "../public/index.html"), "utf8");
   assert.match(html, /id="tagEditorModal"/);
   assert.match(html, /id="tagNameInput"[\s\S]*?value="ក្លិនពេញនិយម"/);
+  assert.match(html, /id="tagFilterInput"/);
   assert.match(html, /id="tagProductChecklist"/);
   assert.match(html, /id="tagProductSelect"/);
 });
@@ -295,3 +298,40 @@ test("backend product list includes tag button and tags before edit button", () 
   assert.match(css, /\.tag-product-btn/);
   assert.match(css, /\.product-tags-group/);
 });
+
+test("product list backend Edit and Delete buttons use icons", () => {
+  const appJs = fs.readFileSync(path.join(__dirname, "../public/app.js"), "utf8");
+  // Edit button uses ✏️ icon
+  assert.match(appJs, /<button[^>]*data-action="edit"[^>]*>✏️<\/button>/);
+  // Delete button uses 🗑️ icon
+  assert.match(appJs, /<button[^>]*data-action="delete"[^>]*>🗑️<\/button>/);
+});
+
+test("store.saveTag supports filter boolean and listTags returns it", async () => {
+  const store = createFallbackStore();
+  const saved = await store.saveTag("fragrantica", {
+    name: "Summer Fresh",
+    filter: false,
+    productIds: [],
+  });
+  const summerTag = saved.find((t) => t.name === "Summer Fresh");
+  assert.ok(summerTag);
+  assert.strictEqual(summerTag.filter, false);
+
+  const defaultTag = saved.find((t) => t.name === "ក្លិនពេញនិយម");
+  assert.ok(defaultTag);
+  assert.strictEqual(defaultTag.filter, true);
+});
+
+test("index.html and styles.css support frontend tag filters and tag table Filter column", () => {
+  const html = fs.readFileSync(path.join(__dirname, "../public/index.html"), "utf8");
+  assert.match(html, /id="frontendTagFilters"/);
+  assert.match(html, /class="th-tag-filter"/);
+
+  const css = fs.readFileSync(path.join(__dirname, "../public/styles.css"), "utf8");
+  assert.match(css, /\.th-tag-filter/);
+  assert.match(css, /\.filter-status-pill/);
+  assert.match(css, /\.frontend-tag-filters/);
+  assert.match(css, /body\.mode-frontend[\s\S]*?\.sort-control-wrap/);
+});
+

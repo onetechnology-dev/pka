@@ -131,13 +131,16 @@ test("UI sort control and Brand column click dynamically reorder product list", 
     let brands = await page.locator(".fragrance-card .brand-eyebrow").allTextContents();
     assert.deepEqual(brands, ["Creed", "Dior", "Versace"]);
 
+    // Sort control is hidden on frontend storefront
+    assert.ok(await page.locator("#sortControlWrap").isHidden());
+
+    // Switch to admin table view where sort control is available
+    await page.goto(baseUrl + "/admin");
+    assert.ok(await page.locator("#sortControlWrap").isVisible());
+
     // Change sortSelect to brand-desc: Versace -> Dior -> Creed
     await page.locator("#sortSelect").selectOption("brand-desc");
-    brands = await page.locator(".fragrance-card .brand-eyebrow").allTextContents();
-    assert.deepEqual(brands, ["Versace", "Dior", "Creed"]);
 
-    // Switch to admin table view
-    await page.goto(baseUrl + "/admin");
     await page.locator("#tableView").click();
     assert.equal(await page.locator("#resultsBody tr").count(), 3);
     let tableBrands = await page.locator("#resultsBody .brand-name").allTextContents();

@@ -247,6 +247,8 @@ function setAppMode(mode) {
   if (storefrontHero) storefrontHero.hidden = !isFrontend;
   if (adminControlPanel) adminControlPanel.classList.toggle("admin-hidden", isFrontend);
   if (adminSummaryGrid) adminSummaryGrid.classList.toggle("admin-hidden", isFrontend);
+  const sortControlWrap = document.querySelector("#sortControlWrap");
+  if (sortControlWrap) sortControlWrap.hidden = isFrontend;
 
   if (topbarEyebrow) {
     topbarEyebrow.textContent = isFrontend ? (currentSettings.subtitle || DEFAULT_SETTINGS.subtitle) : "Admin Scraper & Inventory Portal";
@@ -392,8 +394,8 @@ function renderActions(product) {
   return `<div class="product-actions">
     ${tagsHtml ? `<span class="product-tags-group">${tagsHtml}</span>` : ""}
     <button type="button" class="tag-product-btn" data-action="tag" data-id="${escapeHtml(product.id)}" ${product.id ? "" : "disabled"} title="Manage tags for this perfume">🏷️ Tag</button>
-    <button type="button" data-action="edit" data-id="${escapeHtml(product.id)}" ${product.id ? "" : "disabled"}>Edit</button>
-    <button type="button" class="delete-product" data-action="delete" data-id="${escapeHtml(product.id)}" ${product.id ? "" : "disabled"}>Delete</button>
+    <button type="button" class="action-icon-btn edit-product-btn" data-action="edit" data-id="${escapeHtml(product.id)}" ${product.id ? "" : "disabled"} title="Edit" aria-label="Edit">✏️</button>
+    <button type="button" class="action-icon-btn delete-product delete-product-btn" data-action="delete" data-id="${escapeHtml(product.id)}" ${product.id ? "" : "disabled"} title="Delete" aria-label="Delete">🗑️</button>
   </div>`;
 }
 
@@ -520,6 +522,12 @@ function visibleProducts() {
       if (!matchesMen && !matchesWomen && !matchesUnisex) return false;
     }
 
+    if (selectedTagFilters.size > 0) {
+      const productTags = Array.isArray(product.tags) ? product.tags : [];
+      const matchesTag = [...selectedTagFilters].some((t) => productTags.includes(t));
+      if (!matchesTag) return false;
+    }
+
     if (!query) return true;
 
     return [
@@ -586,6 +594,19 @@ function updateFilterCounts() {
   if (countMen) countMen.textContent = `(${menCount})`;
   if (countWomen) countWomen.textContent = `(${womenCount})`;
   if (countUnisex) countUnisex.textContent = `(${unisexCount})`;
+
+  for (const tag of currentTags) {
+    if (tag.filter === false) continue;
+    let tagCount = 0;
+    for (const product of baseProducts) {
+      if (Array.isArray(product.tags) && product.tags.includes(tag.name)) {
+        tagCount++;
+      }
+    }
+    const safeName = CSS.escape ? CSS.escape(tag.name) : tag.name.replace(/["\\]/g, "\\$&");
+    const countEl = document.querySelector(`[data-tag-count="${safeName}"]`);
+    if (countEl) countEl.textContent = `(${tagCount})`;
+  }
 }
 
 function renderMetrics() {
@@ -1876,6 +1897,7 @@ try {
   if (savedSort && sortSelect) sortSelect.value = savedSort;
 } catch (_) {}
 loadSavedProducts();
+loadTags();
 initHoldToCopyListeners();
 
 function isImageUrl(val) {
@@ -2795,6 +2817,48 @@ logoutBtn?.addEventListener("click", async () => {
    Tag Settings & Tag Editor Management
    ========================================================================== */
 let currentTags = [];
+const selectedTagFilters = new Set();
+const tagFilterInput = document.querySelector("#tagFilterInput");
+const tagFilterStatusLabel = document.querySelector("#tagFilterStatusLabel");
+const frontendTagFilters = document.querySelector("#frontendTagFilters");
+
+tagFilterInput?.addEventListener("change", () => {
+  if (tagFilterStatusLabel) {
+    tagFilterStatusLabel.textContent = tagFilterInput.checked ? "true" : "false";
+  }
+});
+
+function renderFrontendTagFilters() {
+  if (!frontendTagFilters) return;
+  const activeTags = currentTags.filter((t) => t.filter !== false);
+  if (!activeTags.length) {
+    frontendTagFilters.innerHTML = "";
+    return;
+  }
+  frontendTagFilters.innerHTML = activeTags
+    .map((tag) => {
+      const isChecked = selectedTagFilters.has(tag.name);
+      return `
+        <label class="gender-chip tag-filter-chip" for="filterTag_${escapeHtml(tag.id)}">
+          <input type="checkbox" id="filterTag_${escapeHtml(tag.id)}" class="filter-tag-checkbox" data-tag-name="${escapeHtml(tag.name)}" ${isChecked ? "checked" : ""} />
+          <span class="chip-label">🏷️ ${escapeHtml(tag.name)}</span><span class="filter-count" data-tag-count="${escapeHtml(tag.name)}">(0)</span>
+        </label>
+      `;
+    })
+    .join("");
+}
+
+frontendTagFilters?.addEventListener("change", (e) => {
+  const cb = e.target.closest(".filter-tag-checkbox");
+  if (!cb) return;
+  const tagName = cb.dataset.tagName;
+  if (cb.checked) {
+    selectedTagFilters.add(tagName);
+  } else {
+    selectedTagFilters.delete(tagName);
+  }
+  renderTable();
+});
 
 async function loadTags() {
   try {
@@ -2803,6 +2867,8 @@ async function loadTags() {
       const data = await res.json();
       currentTags = Array.isArray(data.tags) ? data.tags : [];
       renderTagTable();
+      renderFrontendTagFilters();
+      updateFilterCounts();
     }
   } catch (err) {
     console.warn("Failed to load tags:", err);
@@ -2820,6 +2886,7 @@ function renderTagTable() {
 
   tagTableBody.innerHTML = currentTags
     .map((tag) => {
+      const isFilterActive = tag.filter !== false;
       const perfumeChips = (tag.productNames || []).length
         ? (tag.productNames || []).map((name) => `<span class="perfume-tag-chip">${escapeHtml(name)}</span>`).join("")
         : `<span class="perfume-tag-chip empty">No perfumes assigned</span>`;
@@ -2828,6 +2895,9 @@ function renderTagTable() {
         <tr data-tag-id="${escapeHtml(tag.id)}">
           <td class="tag-name-cell">
             <span class="tag-pill">🏷️ ${escapeHtml(tag.name)}</span>
+          </td>
+          <td class="tag-filter-cell">
+            <span class="filter-status-pill ${isFilterActive ? "true" : "false"}">${isFilterActive ? "true" : "false"}</span>
           </td>
           <td>
             <div class="tag-perfumes-list">
@@ -2891,6 +2961,10 @@ function openTagEditor(tag = null) {
   if (!tagEditorModal) return;
   if (tagEditorError) tagEditorError.hidden = true;
   if (tagPickerSearch) tagPickerSearch.value = "";
+
+  const isFilter = tag ? (tag.filter !== false) : true;
+  if (tagFilterInput) tagFilterInput.checked = isFilter;
+  if (tagFilterStatusLabel) tagFilterStatusLabel.textContent = isFilter ? "true" : "false";
 
   if (tag) {
     if (tagEditorTitle) tagEditorTitle.textContent = "🏷️ Edit Tag";
@@ -2961,6 +3035,8 @@ tagTableBody?.addEventListener("click", async (event) => {
       if (!res.ok) throw new Error(data.error || "Failed to delete tag.");
       currentTags = Array.isArray(data.tags) ? data.tags : [];
       renderTagTable();
+      renderFrontendTagFilters();
+      updateFilterCounts();
       if (Array.isArray(data.products)) {
         setProducts(data.products, `Tag "${tag.name}" deleted`);
       }
@@ -2984,10 +3060,12 @@ tagEditorForm?.addEventListener("submit", async (event) => {
     const selectedProductIds = getSelectedTagProductIds();
     const tagId = (tagEditId?.value || "").trim();
     const source = sourceInput?.value || "fragrantica";
+    const filter = tagFilterInput ? tagFilterInput.checked : true;
 
     const payload = {
       id: tagId || undefined,
       name: tagName,
+      filter,
       productIds: selectedProductIds,
       source,
     };
@@ -3003,6 +3081,8 @@ tagEditorForm?.addEventListener("submit", async (event) => {
 
     currentTags = Array.isArray(data.tags) ? data.tags : [];
     renderTagTable();
+    renderFrontendTagFilters();
+    updateFilterCounts();
     if (Array.isArray(data.products)) {
       setProducts(data.products, `Tag "${tagName}" saved`);
     }

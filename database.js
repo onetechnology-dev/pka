@@ -26,7 +26,7 @@ const DEFAULT_SETTINGS = {
 };
 
 const DEFAULT_TAGS = [
-  { id: "default-popular", name: "ក្លិនពេញនិយម" },
+  { id: "default-popular", name: "ក្លិនពេញនិយម", filter: true },
 ];
 
 function problem(message, statusCode = 400) {
@@ -402,14 +402,16 @@ function createFallbackStore(options = {}) {
         return {
           id: tag.id,
           name: tag.name,
+          filter: tag.filter !== false,
           productIds: matching.map((p) => p.id),
           productNames: matching.map((p) => p.name),
         };
       });
     },
-    async saveTag(source = "fragrantica", { id, name, productIds = [] }) {
+    async saveTag(source = "fragrantica", { id, name, productIds = [], filter = true }) {
       const tagName = String(name || "").trim();
       if (!tagName) throw problem("Tag name is required.");
+      const isFilter = filter !== false && filter !== "false" && filter !== 0;
       const allProducts = await this.list(source);
       let tagsSetting = [];
       try {
@@ -421,10 +423,11 @@ function createFallbackStore(options = {}) {
       let targetTag = id ? tagsSetting.find((t) => t.id === id) : null;
       const oldName = targetTag ? targetTag.name : null;
       if (!targetTag) {
-        targetTag = { id: id || ("tag-" + randomUUID().slice(0, 8)), name: tagName };
+        targetTag = { id: id || ("tag-" + randomUUID().slice(0, 8)), name: tagName, filter: isFilter };
         tagsSetting.push(targetTag);
       } else {
         targetTag.name = tagName;
+        targetTag.filter = isFilter;
       }
       memorySettings.catalog_tags = JSON.stringify(tagsSetting);
 
@@ -796,14 +799,16 @@ async function createStore(options = {}) {
         return {
           id: tag.id,
           name: tag.name,
+          filter: tag.filter !== false,
           productIds: matching.map((p) => p.id),
           productNames: matching.map((p) => p.name),
         };
       });
     },
-    async saveTag(source = "fragrantica", { id, name, productIds = [] }) {
+    async saveTag(source = "fragrantica", { id, name, productIds = [], filter = true }) {
       const tagName = String(name || "").trim();
       if (!tagName) throw problem("Tag name is required.");
+      const isFilter = filter !== false && filter !== "false" && filter !== 0;
       const allProducts = await this.list(source);
       const [rows] = await pool.execute("SELECT setting_value FROM scraper_settings WHERE setting_key='catalog_tags'");
       let tagsSetting = [];
@@ -816,10 +821,11 @@ async function createStore(options = {}) {
       let targetTag = id ? tagsSetting.find((t) => t.id === id) : null;
       const oldName = targetTag ? targetTag.name : null;
       if (!targetTag) {
-        targetTag = { id: id || ("tag-" + randomUUID().slice(0, 8)), name: tagName };
+        targetTag = { id: id || ("tag-" + randomUUID().slice(0, 8)), name: tagName, filter: isFilter };
         tagsSetting.push(targetTag);
       } else {
         targetTag.name = tagName;
+        targetTag.filter = isFilter;
       }
       await pool.execute(
         "INSERT INTO scraper_settings (setting_key, setting_value) VALUES ('catalog_tags', ?) ON DUPLICATE KEY UPDATE setting_value=VALUES(setting_value)",
