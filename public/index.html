@@ -112,10 +112,9 @@
       <section class="admin-login-module" id="adminLoginModule" aria-label="Administrator login" hidden>
         <div class="login-module-backdrop"></div>
         <div class="login-module-card">
-          <div class="login-module-crest" aria-hidden="true">⚜️</div>
-          <h2 class="login-module-title">PKA SCENT</h2>
-          <p class="login-module-eyebrow">Haute Parfumerie • Management Console</p>
-          <div class="login-module-divider"></div>
+          <div class="login-module-crest brand-crest" id="loginModuleCrest" aria-hidden="true">
+            <span class="crest-symbol" id="loginCrestSymbol">⚜️</span>
+          </div>
 
           <div id="adminLoginError" class="login-module-error" role="alert" hidden>
             <span>⚠️</span> <span id="adminLoginErrorMsg">Invalid username or password.</span>
@@ -153,10 +152,6 @@
               ⚜️ Sign In to Dashboard →
             </button>
           </form>
-
-          <div class="login-module-footer">
-            <a href="/" class="module-return-link">← Return to Storefront</a>
-          </div>
         </div>
       </section>
 

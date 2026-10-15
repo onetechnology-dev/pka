@@ -2173,17 +2173,31 @@ body.mode-frontend .filter-input-wrap {
 }
 
 .login-module-crest {
-  width: 56px;
-  height: 56px;
-  margin: 0 auto 14px;
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 20px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 28px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #43102d 0%, #200416 100%);
-  border: 2px solid rgba(212, 175, 55, 0.45);
-  box-shadow: 0 0 20px rgba(212, 175, 55, 0.25);
+  border-radius: 14px;
+  background: #000000;
+  border: 1px solid rgba(212, 175, 55, 0.45);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+  color: #ffffff;
+}
+
+.login-module-crest .crest-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: inherit;
+}
+
+.login-module-crest .crest-symbol {
+  font-size: 32px;
+  color: #ffffff;
+  line-height: 1;
 }
 
 .login-module-title {
@@ -2305,11 +2319,34 @@ body.mode-frontend .filter-input-wrap {
   text-decoration: underline;
 }
 
-/* When admin is locked, hide admin panel & summary until authenticated */
+.login-module-footer {
+  display: none !important;
+}
+
+/* When admin is locked, hide header, footer, floating widget, admin panel, summary & results until authenticated */
+body.admin-locked .brand-topbar,
+body.admin-locked .topbar,
+body.admin-locked .app-footer,
+body.admin-locked #appFooter,
+body.admin-locked .telegram-floating-widget,
 body.admin-locked #adminControlPanel,
 body.admin-locked #adminSummaryGrid,
 body.admin-locked .results-section {
   display: none !important;
+}
+
+body.admin-locked .app-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 30px 16px;
+  box-sizing: border-box;
+}
+
+body.admin-locked .admin-login-module {
+  margin: 0 auto;
 }
 
 /* ==========================================================================

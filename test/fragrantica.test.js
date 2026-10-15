@@ -255,7 +255,7 @@ test("uses structured product identity and description fallback; absent tiers st
 test("extracts supplied modern markup, prioritizes microdata, and retains accord styles and note images", async () => {
   const page = await browser.newPage();
   try {
-    await page.setContent(modernHtml);
+    await page.setContent(modernHtml, { waitUntil: "domcontentloaded" });
     const result = await page.evaluate(extractFragranticaProduct);
     assert.equal(result.name, product.name);
     assert.equal(result.brand, product.brand);
@@ -317,7 +317,7 @@ test("scrape accepts the modern page and preserves its file when a subsequent pa
 test("UI renders and exports accord styles and note pictures from supplied markup", async () => {
   const page = await context.newPage();
   try {
-    await page.setContent(modernHtml);
+    await page.setContent(modernHtml, { waitUntil: "domcontentloaded" });
     const extracted = await page.evaluate(extractFragranticaProduct);
     await page.route("**/api/products*", (route) => route.fulfill({ json: { products: [extracted] } }));
     await page.goto(adminUrl);

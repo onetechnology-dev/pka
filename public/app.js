@@ -138,6 +138,7 @@ const telegramFloatingPillLabel = document.querySelector("#telegramFloatingPillL
 const settingsStatusMsg = document.querySelector("#settingsStatusMsg");
 const brandCrest = document.querySelector("#brandCrest");
 const footerCrest = document.querySelector("#footerCrest");
+const loginModuleCrest = document.querySelector("#loginModuleCrest");
 const brandTitle = document.querySelector("#brandTitle");
 const viewFrontendText = document.querySelector("#viewFrontendText");
 const footerProjectName = document.querySelector("#footerProjectName");
@@ -1942,6 +1943,7 @@ function applySettings(settings) {
 
   renderCrestContent(brandCrest, currentSettings.logo);
   renderCrestContent(footerCrest, currentSettings.logo);
+  renderCrestContent(loginModuleCrest, currentSettings.logo);
 
   if (brandTitle) brandTitle.textContent = currentSettings.projectName;
   document.title = `${currentSettings.projectName} | Luxury Fragrance Scraper & Collection`;

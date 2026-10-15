@@ -107,7 +107,7 @@ test("backend UI disappears summary metrics and toolbar heading/view controls, r
   }
 });
 
-test("login module does not display credentials hint or admin portal heading/description text", () => {
+test("login module does not display header, footer, or credentials hint, and renders website logo", async () => {
   const fs = require("node:fs");
   const path = require("node:path");
   const html = fs.readFileSync(path.join(__dirname, "../public/index.html"), "utf8");
@@ -115,4 +115,31 @@ test("login module does not display credentials hint or admin portal heading/des
   assert.doesNotMatch(html, /Admin Portal Sign In/i);
   assert.doesNotMatch(html, /Enter administrator credentials to access the scraper control panel/i);
   assert.doesNotMatch(html, /Invalid credentials\. User: admin, Password: 123/i);
+  assert.doesNotMatch(html, /class="login-module-footer"/i);
+  assert.doesNotMatch(html, /class="login-module-title"/i);
+  assert.doesNotMatch(html, /class="login-module-eyebrow"/i);
+  assert.match(html, /id="loginModuleCrest"/);
+
+  const css = fs.readFileSync(path.join(__dirname, "../public/styles.css"), "utf8");
+  assert.match(css, /body\.admin-locked[\s\S]*?\.brand-topbar/);
+  assert.match(css, /body\.admin-locked[\s\S]*?\.app-footer/);
+
+  // E2E check on locked login page
+  const unauthContext = await browser.newContext();
+  const page = await unauthContext.newPage();
+  try {
+    await page.goto(baseUrl + "/admin");
+    await page.locator("#adminLoginModule").waitFor({ state: "visible" });
+
+    // Page header and page footer are hidden on login form
+    assert.ok(await page.locator(".brand-topbar").isHidden());
+    assert.ok(await page.locator(".app-footer").isHidden());
+
+    // Website logo is displayed on the login form
+    assert.ok(await page.locator("#loginModuleCrest").isVisible());
+    assert.equal(await page.locator("#loginModuleCrest .crest-symbol").textContent(), "⚜️");
+  } finally {
+    await page.close().catch(() => {});
+    await unauthContext.close().catch(() => {});
+  }
 });
