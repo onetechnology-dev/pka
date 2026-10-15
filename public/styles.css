@@ -2104,7 +2104,10 @@ body.mode-frontend .view-switch {
   display: none !important;
 }
 
-/* Backend mode: keep only single Settings button on topbar */
+/* Backend mode: disappear button settings below header logo (Settings is in left nav menu) */
+body.mode-backend .topbar-controls,
+body.mode-backend #openSettingsBtn,
+body.mode-backend .settings-trigger-btn,
 body.mode-backend .topbar-controls .mode-navigation,
 body.mode-backend .topbar-controls .logout-trigger-btn,
 body.mode-backend .topbar-controls .status-pill {

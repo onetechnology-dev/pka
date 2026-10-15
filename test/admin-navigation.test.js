@@ -49,11 +49,12 @@ test("backend UI disappears summary metrics and toolbar heading/view controls, r
     assert.equal(await page.locator('label[for="filterWomen"] .chip-label').textContent(), "ស្រី");
     assert.equal(await page.locator('label[for="filterUnisex"] .chip-label').textContent(), "ស្រី/ប្រុស");
 
-    // 3. Verify topbar-controls contains only ONE visible button: #openSettingsBtn (Settings)
+    // 3. Verify topbar settings button below header logo has disappeared on backend
     const visibleTopbarButtons = await page.locator(".topbar-controls button").evaluateAll((btns) =>
       btns.filter((b) => window.getComputedStyle(b).display !== "none" && b.offsetWidth > 0 && b.offsetHeight > 0).map((b) => b.id)
     );
-    assert.deepEqual(visibleTopbarButtons, ["openSettingsBtn"]);
+    assert.deepEqual(visibleTopbarButtons, []);
+    assert.equal(await page.locator("#openSettingsBtn").isVisible(), false);
 
     // 4. Verify adminSidebar exists and contains all required nav buttons
     assert.equal(await page.locator("#adminSidebar").isVisible(), true);

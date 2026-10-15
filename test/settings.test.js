@@ -104,8 +104,8 @@ test("UI opens settings dialog, changes logo, project name, foot tag, and persis
     assert.equal(await page.locator("#footerTag").textContent(), DEFAULT_SETTINGS.footTag);
     assert.equal(await page.locator("#footerProjectName").textContent(), "PKA SCENT");
 
-    // Open settings dialog via topbar button
-    await page.locator("#openSettingsBtn").click();
+    // Open settings dialog via sidebar admin settings button
+    await page.locator("#adminSettingsBtn").click();
     assert.equal(await page.locator("#settingsDialog").isVisible(), true);
     assert.equal(await page.locator("#settingDefaultWebsite").inputValue(), "fragrantica");
 
