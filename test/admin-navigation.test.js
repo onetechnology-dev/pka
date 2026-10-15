@@ -40,6 +40,15 @@ test("backend UI disappears summary metrics and toolbar heading/view controls, r
     // 2. Verify Fragrance Inventory / Catalogue heading and old toolbar view switch are disappeared
     assert.equal(await page.locator(".toolbar-title-group").isVisible(), false);
 
+    // Verify Admin Controls header and Show browser switch are disappeared
+    assert.equal(await page.locator(".admin-panel-header").isVisible(), false);
+    assert.equal(await page.locator(".switch:has(#showBrowser)").isVisible(), false);
+
+    // Verify filter chips have Khmer labels: ប្រុស, ស្រី, ស្រី/ប្រុស
+    assert.equal(await page.locator('label[for="filterMen"] .chip-label').textContent(), "ប្រុស");
+    assert.equal(await page.locator('label[for="filterWomen"] .chip-label').textContent(), "ស្រី");
+    assert.equal(await page.locator('label[for="filterUnisex"] .chip-label').textContent(), "ស្រី/ប្រុស");
+
     // 3. Verify topbar-controls contains only ONE visible button: #openSettingsBtn (Settings)
     const visibleTopbarButtons = await page.locator(".topbar-controls button").evaluateAll((btns) =>
       btns.filter((b) => window.getComputedStyle(b).display !== "none" && b.offsetWidth > 0 && b.offsetHeight > 0).map((b) => b.id)

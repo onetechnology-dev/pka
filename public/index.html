@@ -163,7 +163,7 @@
 
       <!-- Admin Scraper Control Panel (Visible in Backend / Admin View) -->
       <section class="control-panel admin-only-section" id="adminControlPanel" aria-label="Scraper controls">
-        <div class="admin-panel-header">
+        <div class="admin-panel-header" style="display: none;">
           <span class="admin-badge">Admin Controls</span>
         </div>
         <form id="scrapeForm" class="scrape-form">
@@ -186,7 +186,7 @@
             ></textarea>
           </label>
 
-          <label class="switch">
+          <label class="switch" style="display: none;">
             <input id="showBrowser" name="showBrowser" type="checkbox" />
             <span class="switch-track" aria-hidden="true"></span>
             <span>Show browser</span>
@@ -233,41 +233,46 @@
           </div>
 
           <div class="filters-container">
-            <div class="filter-input-wrap">
-              <span class="search-symbol" aria-hidden="true">🔍</span>
-              <input
-                id="filterInput"
-                type="search"
-                placeholder="Filter name or barcode"
-                aria-label="Filter products"
-              />
+            <div class="filter-search-row">
+              <div class="filter-input-wrap">
+                <span class="search-symbol" aria-hidden="true">🔍</span>
+                <input
+                  id="filterInput"
+                  type="search"
+                  placeholder="Filter name or barcode"
+                  aria-label="Filter products"
+                />
+              </div>
             </div>
-            <div class="gender-filters" role="group" aria-label="Filter by gender">
-              <label class="gender-chip" for="filterMen">
-                <input type="checkbox" id="filterMen" name="filterMen" />
-                <span class="chip-label">MEN</span><span class="filter-count" id="countMen">(0)</span>
-              </label>
-              <label class="gender-chip" for="filterWomen">
-                <input type="checkbox" id="filterWomen" name="filterWomen" />
-                <span class="chip-label">WOMEN</span><span class="filter-count" id="countWomen">(0)</span>
-              </label>
-              <label class="gender-chip" for="filterUnisex">
-                <input type="checkbox" id="filterUnisex" name="filterUnisex" />
-                <span class="chip-label">UNISEX</span><span class="filter-count" id="countUnisex">(0)</span>
-              </label>
-            </div>
-            <div class="sort-control-wrap" id="sortControlWrap">
-              <label class="sort-label" for="sortSelect">
-                <span class="sort-icon" aria-hidden="true">⇅</span>
-                <span>Sort:</span>
-              </label>
-              <select id="sortSelect" class="sort-select" aria-label="Sort products by">
-                <option value="brand-asc" selected>Brand (A → Z)</option>
-                <option value="brand-desc">Brand (Z → A)</option>
-                <option value="name-asc">Name (A → Z)</option>
-                <option value="name-desc">Name (Z → A)</option>
-                <option value="default">Default</option>
-              </select>
+
+            <div class="filter-actions-row">
+              <div class="gender-filters" role="group" aria-label="Filter by gender">
+                <label class="gender-chip" for="filterMen">
+                  <input type="checkbox" id="filterMen" name="filterMen" />
+                  <span class="chip-label">ប្រុស</span><span class="filter-count" id="countMen">(0)</span>
+                </label>
+                <label class="gender-chip" for="filterWomen">
+                  <input type="checkbox" id="filterWomen" name="filterWomen" />
+                  <span class="chip-label">ស្រី</span><span class="filter-count" id="countWomen">(0)</span>
+                </label>
+                <label class="gender-chip" for="filterUnisex">
+                  <input type="checkbox" id="filterUnisex" name="filterUnisex" />
+                  <span class="chip-label">ស្រី/ប្រុស</span><span class="filter-count" id="countUnisex">(0)</span>
+                </label>
+              </div>
+              <div class="sort-control-wrap" id="sortControlWrap">
+                <label class="sort-label" for="sortSelect">
+                  <span class="sort-icon" aria-hidden="true">⇅</span>
+                  <span>Sort:</span>
+                </label>
+                <select id="sortSelect" class="sort-select" aria-label="Sort products by">
+                  <option value="brand-asc" selected>Brand (A → Z)</option>
+                  <option value="brand-desc">Brand (Z → A)</option>
+                  <option value="name-asc">Name (A → Z)</option>
+                  <option value="name-desc">Name (Z → A)</option>
+                  <option value="default">Default</option>
+                </select>
+              </div>
             </div>
           </div>
         </div>

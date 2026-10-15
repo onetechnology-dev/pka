@@ -267,13 +267,7 @@ h2 {
 }
 
 .admin-panel-header {
-  grid-column: 1 / -1;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: -2px;
-  padding-bottom: 12px;
-  border-bottom: 1px dashed var(--border);
+  display: none !important;
 }
 
 .admin-badge {
@@ -303,7 +297,7 @@ h2 {
 
 .scrape-form {
   display: grid;
-  grid-template-columns: 1fr auto auto;
+  grid-template-columns: 1fr auto;
   gap: 16px;
   align-items: end;
   width: 100%;
@@ -565,6 +559,11 @@ dialog::backdrop { background: #17101b88; }
   white-space: nowrap;
 }
 
+.scrape-form .switch,
+.switch:has(#showBrowser) {
+  display: none !important;
+}
+
 .switch input {
   position: absolute;
   opacity: 0;
@@ -691,9 +690,27 @@ dialog::backdrop { background: #17101b88; }
 
 .filters-container {
   display: flex;
-  align-items: center;
+  flex-direction: column;
   gap: 12px;
+  width: 100%;
+}
+
+.filter-search-row {
+  width: 100%;
+}
+
+.filter-search-row .filter-input-wrap {
+  position: relative;
+  width: 100%;
+}
+
+.filter-actions-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   flex-wrap: wrap;
+  gap: 12px;
+  width: 100%;
 }
 
 .filter-input-wrap {

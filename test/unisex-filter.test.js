@@ -3,13 +3,13 @@ const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
 
-test("index.html contains filter chips with count indicators for MEN, WOMEN, and UNISEX", () => {
+test("index.html contains filter chips with count indicators for ប្រុស, ស្រី, and ស្រី/ប្រុស", () => {
   const html = fs.readFileSync(path.join(__dirname, "../public/index.html"), "utf8");
   assert.match(html, /id="filterUnisex"/);
   assert.match(html, /for="filterUnisex"/);
-  assert.match(html, /<span class="chip-label">MEN<\/span><span class="filter-count" id="countMen">\(0\)<\/span>/);
-  assert.match(html, /<span class="chip-label">WOMEN<\/span><span class="filter-count" id="countWomen">\(0\)<\/span>/);
-  assert.match(html, /<span class="chip-label">UNISEX<\/span><span class="filter-count" id="countUnisex">\(0\)<\/span>/);
+  assert.match(html, /<span class="chip-label">ប្រុស<\/span><span class="filter-count" id="countMen">\(0\)<\/span>/);
+  assert.match(html, /<span class="chip-label">ស្រី<\/span><span class="filter-count" id="countWomen">\(0\)<\/span>/);
+  assert.match(html, /<span class="chip-label">ស្រី\/ប្រុស<\/span><span class="filter-count" id="countUnisex">\(0\)<\/span>/);
 });
 
 test("styles.css contains styling for filterUnisex chip input and filter-count", () => {
