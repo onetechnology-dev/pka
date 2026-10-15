@@ -306,10 +306,14 @@ test("product list backend Edit and Delete buttons use text and modern single ro
   // Delete button uses text Delete
   assert.match(appJs, /<button[^>]*data-action="delete"[^>]*>Delete<\/button>/);
 
+  // Status and all buttons are in renderActions in one row
+  assert.match(appJs, /<div class="product-actions">[\s\S]*?\${renderProductStatus\(product\)}[\s\S]*?data-action="tag"[\s\S]*?data-action="edit"[\s\S]*?data-action="delete"/);
+
   const css = fs.readFileSync(path.join(__dirname, "../public/styles.css"), "utf8");
-  // Single row layout for backend product-actions
+  // Single row layout for backend product-actions and product-status
   assert.match(css, /\.product-actions\s*\{[^}]*flex-wrap:\s*nowrap/);
   assert.match(css, /\.product-actions\s*\{[^}]*white-space:\s*nowrap/);
+  assert.match(css, /\.product-status\s*\{[^}]*white-space:\s*nowrap/);
   assert.match(css, /\.edit-product-btn/);
   assert.match(css, /\.delete-product-btn/);
 });

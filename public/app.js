@@ -283,8 +283,8 @@ function updateSourceView() {
   detailCountLabel.textContent = fragrance ? "With brand" : "With barcode";
   filterInput.placeholder = fragrance ? "Filter name, brand, accords or notes" : "Filter name or barcode";
   resultsHead.innerHTML = fragrance
-    ? '<th>Product Name</th><th>Product Photo</th><th class="th-sortable" id="thBrand" title="Click to sort by brand">Brand</th><th>Main Accords</th><th>Top Notes</th><th>Base Notes</th><th>Fragrance Notes</th><th class="status-column">Status</th><th class="action-column">Action</th>'
-    : '<th>Photo</th><th>Barcode</th><th>Name</th><th class="price-column">Price</th><th>Status</th><th>Action</th>';
+    ? '<th>Product Name</th><th>Product Photo</th><th class="th-sortable" id="thBrand" title="Click to sort by brand">Brand</th><th>Main Accords</th><th>Top Notes</th><th>Base Notes</th><th>Fragrance Notes</th><th class="action-column">Action</th>'
+    : '<th>Photo</th><th>Barcode</th><th>Name</th><th class="price-column">Price</th><th class="action-column">Action</th>';
   resultsHead.closest("table").classList.toggle("fragrance-table", fragrance);
   if (toolbarHeading) {
     toolbarHeading.textContent = currentMode === "frontend" ? "Fragrance Collection" : (fragrance ? "Fragrance Inventory" : "Scraped Products");
@@ -393,6 +393,7 @@ function renderActions(product) {
     .join("");
 
   return `<div class="product-actions">
+    ${renderProductStatus(product)}
     ${tagsHtml ? `<span class="product-tags-group">${tagsHtml}</span>` : ""}
     <button type="button" class="tag-product-btn" data-action="tag" data-id="${escapeHtml(product.id)}" ${product.id ? "" : "disabled"} title="Manage tags for this perfume">🏷️ Tag</button>
     <button type="button" class="edit-product-btn" data-action="edit" data-id="${escapeHtml(product.id)}" ${product.id ? "" : "disabled"} title="Edit perfume">Edit</button>
@@ -436,7 +437,7 @@ function renderGallery(rows) {
         </div>
         <h3>${escapeHtml(product.name)}</h3>
       </header>
-      <div class="card-actions">${renderProductStatus(product)}${renderActions(product)}</div>
+      <div class="card-actions">${renderActions(product)}</div>
       <div class="fragrance-layout">
         <div class="bottle-panel">${renderImage(product.photo, product.name, "bottle-photo")}</div>
         <div class="identity-panel">
@@ -646,8 +647,7 @@ function renderTable() {
           <td>${renderNotes(product.topNotes)}</td>
           <td>${renderNotes(product.baseNotes)}</td>
           <td>${renderNotes(product.fragranceNotes)}</td>
-          <td>${renderProductStatus(product)}</td>
-          <td>${renderActions(product)}</td>
+          <td class="action-cell">${renderActions(product)}</td>
         </tr>`;
       }
 
@@ -657,8 +657,7 @@ function renderTable() {
           <td class="barcode ${product.barcode ? "" : "missing"}">${escapeHtml(product.barcode || "No barcode")}</td>
           <td class="product-name">${escapeHtml(product.name)}</td>
           <td class="price">${escapeHtml(formatPrice(product.price))}</td>
-          <td>${renderProductStatus(product)}</td>
-          <td>${renderActions(product)}</td>
+          <td class="action-cell">${renderActions(product)}</td>
         </tr>
       `;
     })

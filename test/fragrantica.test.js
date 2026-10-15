@@ -477,7 +477,7 @@ test("UI switches source, renders six columns, filters notes and downloads sourc
     await page.locator("#runButton").click();
     await page.waitForFunction(() => document.querySelector("#statusText").textContent.includes("Scrape complete"));
     assert.deepEqual(await page.locator("thead th").allTextContents(),
-      ["Product Name", "Product Photo", "Brand", "Main Accords", "Top Notes", "Base Notes", "Fragrance Notes", "Status", "Action"]);
+      ["Product Name", "Product Photo", "Brand", "Main Accords", "Top Notes", "Base Notes", "Fragrance Notes", "Action"]);
     assert.equal(await page.locator("#resultsBody tr").count(), 1);
     assert.match(await page.locator("#resultsBody").textContent(), /Ambrofix™/);
     assert.equal(await page.locator(".product-photo").getAttribute("src"), product.photo);
@@ -493,7 +493,7 @@ test("UI switches source, renders six columns, filters notes and downloads sourc
     for await (const chunk of await download.createReadStream()) chunks.push(chunk);
     assert.deepEqual(JSON.parse(Buffer.concat(chunks).toString()), [product]);
     await setSource(page, "foodpanda");
-    assert.deepEqual(await page.locator("thead th").allTextContents(), ["Photo", "Barcode", "Name", "Price", "Status", "Action"]);
+    assert.deepEqual(await page.locator("thead th").allTextContents(), ["Photo", "Barcode", "Name", "Price", "Action"]);
   } finally { await page.close(); }
 });
 
