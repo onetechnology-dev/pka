@@ -2287,7 +2287,7 @@ body.mode-frontend .filter-input-wrap {
   padding-top: 16px;
   border-top: 1px dashed #ded4dc;
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   font-size: 12px;
 }

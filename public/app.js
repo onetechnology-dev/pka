@@ -2775,7 +2775,7 @@ adminModuleLoginForm?.addEventListener("submit", async (e) => {
       sessionStorage.removeItem("pka_admin_auth");
       if (adminLoginError) {
         if (adminLoginErrorMsg) {
-          adminLoginErrorMsg.textContent = data.error || "Invalid credentials. User: admin, Password: 123";
+          adminLoginErrorMsg.textContent = data.error || "Invalid username or password.";
         }
         adminLoginError.hidden = false;
       }
@@ -2793,7 +2793,7 @@ adminModuleLoginForm?.addEventListener("submit", async (e) => {
     } else {
       if (adminLoginError) {
         if (adminLoginErrorMsg) {
-          adminLoginErrorMsg.textContent = "Invalid credentials. User: admin, Password: 123";
+          adminLoginErrorMsg.textContent = "Invalid username or password.";
         }
         adminLoginError.hidden = false;
       }

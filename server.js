@@ -624,7 +624,7 @@ const server = http.createServer(async (request, response) => {
         response.end(JSON.stringify({ success: true, redirect: "/admin" }));
         return;
       }
-      sendJson(response, 401, { error: "Invalid username or password (use admin / 123)." });
+      sendJson(response, 401, { error: "Invalid username or password." });
       return;
     } catch (_) {
       sendJson(response, 400, { error: "Invalid request payload." });

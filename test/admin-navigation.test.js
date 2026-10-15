@@ -106,3 +106,13 @@ test("backend UI disappears summary metrics and toolbar heading/view controls, r
     await context.close().catch(() => {});
   }
 });
+
+test("login module does not display credentials hint or admin portal heading/description text", () => {
+  const fs = require("node:fs");
+  const path = require("node:path");
+  const html = fs.readFileSync(path.join(__dirname, "../public/index.html"), "utf8");
+  assert.doesNotMatch(html, /Credentials:\s*admin\s*\/\s*123/i);
+  assert.doesNotMatch(html, /Admin Portal Sign In/i);
+  assert.doesNotMatch(html, /Enter administrator credentials to access the scraper control panel/i);
+  assert.doesNotMatch(html, /Invalid credentials\. User: admin, Password: 123/i);
+});
